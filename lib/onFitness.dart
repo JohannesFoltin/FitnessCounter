@@ -13,13 +13,62 @@ class onFitness extends StatefulWidget {
   _onFitness createState() => _onFitness();
 }
 
+abstract class ListItem {
+  Widget buildCard(BuildContext context);
+}
+
+class CardItem implements ListItem {
+  final String titel;
+  final String beschreibung;
+  final String bemerkungen;
+  final String lastValue;
+
+  CardItem(this.titel, this.beschreibung, this.bemerkungen, this.lastValue);
+
+  @override
+  Widget buildCard(BuildContext context) {
+    return Visibility(
+        child: Card(
+      child: ExpansionTile(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              titel,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              width: 50,
+              child: TextField(
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  hintText: 'Enter a search term',
+                ),
+              ),
+            ),
+          ],
+        ),
+        trailing: CloseButton(
+          onPressed: () => {}
+        ),
+        children: [TextButton(onPressed: () => {}, child: Text("Drück mal"))],
+      ),
+    ));
+  }
+}
+
 class _onFitness extends State<onFitness> {
+  _setStateLol() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: ListView(
           children: <Widget>[
+            cardGenerator(),
             cardGenerator(),
             TextButton(
               onPressed: () {
@@ -31,33 +80,67 @@ class _onFitness extends State<onFitness> {
         ),
       ),
     );
-    // TODO: implement build
   }
 
-  final cardGenerator = () => Card(
-        child: ExpansionTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Test",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                width: 50,
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
+  bool vis = true;
+
+  Widget cardGenerator() {
+    return Visibility(
+        visible: vis,
+        child: Card(
+          child: ExpansionTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Test",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  width: 50,
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
                     hintText: 'Enter a search term',
                   ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            trailing: CloseButton(
+              onPressed: () => setState(() {
+                vis = false;
+              }),
+            ),
+            children: [
+            ExpansionTile(
+              controlAffinity: ListTileControlAffinity.leading,
+              title: Text("Erklärung"),
+                children: [Text("datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata",textAlign: TextAlign.center,)],
+            ),
+               ExpansionTile(
+                title: Text("Notizen"),
+                controlAffinity: ListTileControlAffinity.leading,
+                children: <Widget>[
+                  TextField(
+                    maxLines: null,
+                    decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [TextButton(
+                        onPressed:  () => {},
+                        child: Text("Speichern"),
+                      ),],
+                    ),
+                  ),
+                ],
+                )
+              ],)
           ),
-          trailing: CloseButton(
-            onPressed: () => {},
-          ),
-          children: [TextButton(onPressed: () => {}, child: Text("Drück mal"))],
-        ),
-      );
+        );
+  }
 }
