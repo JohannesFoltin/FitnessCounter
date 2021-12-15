@@ -40,7 +40,7 @@ abstract class ListItem {
 class CardItem implements ListItem {
   final String titel;
   final String beschreibung;
-  final ImageProvider pictureAsset;
+  final AssetImage pictureAsset;
 
   CardItem(this.titel, this.beschreibung,this.pictureAsset);
 
@@ -111,7 +111,7 @@ class CardItem implements ListItem {
                 child: Text("Bild")
             ),
             children: [
-              Image(image: pictureAsset)
+              Image(image: pictureAsset),
             ],
           ),
 
