@@ -40,14 +40,17 @@ abstract class ListItem {
 class CardItem implements ListItem {
   final String titel;
   final String beschreibung;
+  final ImageProvider pictureAsset;
 
-  CardItem(this.titel, this.beschreibung);
+  CardItem(this.titel, this.beschreibung,this.pictureAsset);
 
   TextEditingController lastValueCont = new TextEditingController();
   TextEditingController notizenCont = new TextEditingController();
 
   @override
   Widget buildCard(BuildContext context) {
+    lastValueCont.selection = TextSelection.fromPosition(TextPosition(offset: lastValueCont.text.length));
+    notizenCont.selection = TextSelection.fromPosition(TextPosition(offset: notizenCont.text.length));
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final prefs = await SharedPreferences.getInstance();
       lastValueCont.text = prefs.getString(titel + "_lastValue") ?? "0";
@@ -105,16 +108,28 @@ class CardItem implements ListItem {
           ExpansionTile(
             trailing: SizedBox.shrink(),
             title: new Center(
+                child: Text("Bild")
+            ),
+            children: [
+              Image(image: pictureAsset)
+            ],
+          ),
+
+          ExpansionTile(
+            trailing: SizedBox.shrink(),
+            title: new Center(
                 child: Text("Notizen")
             ),
             children: <Widget>[
               TextField(
                 controller: notizenCont,
+                minLines: 5,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
+                decoration: new InputDecoration(
+                  enabledBorder: const OutlineInputBorder(
+
+                  ),),
               ),
               Container(
                 child: Column(

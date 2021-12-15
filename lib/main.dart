@@ -1,6 +1,5 @@
 import 'package:fitness_f/onFitness.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 void main() {
   runApp(MyApp());
@@ -68,8 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => onFitness(items: [
-              CardItem("titel", "beschreibung"),
-              CardItem("Sit-Ups", "hahah opfer"),
+              CardItem("titel", "beschreibung",AssetImage('exercises/meteorid.png')),
+              CardItem("Sit-Ups", "hahah opfer",AssetImage('exercises/meteorid.png')),
             ],))
           );
         },
