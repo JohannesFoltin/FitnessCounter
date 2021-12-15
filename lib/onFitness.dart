@@ -21,13 +21,20 @@ class _onFitness extends State<onFitness> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ListView.builder(
+      body: Column(
+        children:[
+          Expanded(child:
+            ListView.builder(
             itemCount: items.length,
             itemBuilder: (context, index) {
               final item = items[index];
               return item.buildCard(context);
-            }),
+            }
+            )
+            ),
+          TextButton(onPressed: ()=>{},child: Text("Training abbrechen"),),
+        ],
+
       ),
     );
   }
@@ -87,7 +94,8 @@ class CardItem implements ListItem {
             ),
           ],
         ),
-        trailing: CloseButton(
+        trailing: IconButton(
+          icon: Icon(Icons.check),
           onPressed: () => {
             //ToDO
           },
