@@ -67,7 +67,10 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => onFitness(test2:"test"))
+            MaterialPageRoute(builder: (context) => onFitness(items: [
+              CardItem("titel", "beschreibung"),
+              CardItem("Sit-Ups", "hahah opfer"),
+            ],))
           );
         },
         child: Text("Start Training"),

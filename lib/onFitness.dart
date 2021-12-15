@@ -1,16 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class onFitness extends StatefulWidget {
   onFitness({
     Key? key,
-    required this.test2,
+    required this.items,
   }) : super(key: key);
-
-  String test2;
+  final List<ListItem> items;
 
   @override
-  _onFitness createState() => _onFitness();
+  _onFitness createState() => _onFitness(items);
+}
+
+class _onFitness extends State<onFitness> {
+  final List<ListItem> items;
+
+  _onFitness(this.items);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return item.buildCard(context);
+            }),
+      ),
+    );
+  }
 }
 
 abstract class ListItem {
@@ -20,16 +40,33 @@ abstract class ListItem {
 class CardItem implements ListItem {
   final String titel;
   final String beschreibung;
-  final String bemerkungen;
-  final String lastValue;
 
-  CardItem(this.titel, this.beschreibung, this.bemerkungen, this.lastValue);
+  CardItem(this.titel, this.beschreibung);
+
+  TextEditingController lastValueCont = new TextEditingController();
+  TextEditingController notizenCont = new TextEditingController();
 
   @override
   Widget buildCard(BuildContext context) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      lastValueCont.text = prefs.getString(titel + "_lastValue") ?? "0";
+    });
+    lastValueCont.addListener(() async {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString(titel + "_lastValue", lastValueCont.text);
+    });
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      notizenCont.text = prefs.getString(titel + "_lastNotiz") ?? "Schreib was rein";
+    });
+    notizenCont.addListener(() async{
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString(titel + "_lastNotiz", notizenCont.text);
+    });
     return Visibility(
-        child: Card(
-      child: ExpansionTile(
+      child: Card(
+          child: ExpansionTile(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -40,107 +77,62 @@ class CardItem implements ListItem {
             SizedBox(
               width: 50,
               child: TextField(
+                controller: lastValueCont,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  hintText: 'Enter a search term',
-                ),
+                decoration: const InputDecoration(),
               ),
             ),
           ],
         ),
         trailing: CloseButton(
-          onPressed: () => {}
+          onPressed: () => {
+            //ToDO
+          },
         ),
-        children: [TextButton(onPressed: () => {}, child: Text("Drück mal"))],
-      ),
-    ));
-  }
-}
-
-class _onFitness extends State<onFitness> {
-  _setStateLol() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ListView(
-          children: <Widget>[
-            cardGenerator(),
-            cardGenerator(),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("Training abbrechen"),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  bool vis = true;
-
-  Widget cardGenerator() {
-    return Visibility(
-        visible: vis,
-        child: Card(
-          child: ExpansionTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Test",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 50,
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                    hintText: 'Enter a search term',
-                  ),
-                  ),
-                ),
-              ],
-            ),
-            trailing: CloseButton(
-              onPressed: () => setState(() {
-                vis = false;
-              }),
+        children: [
+          ExpansionTile(
+            trailing: SizedBox.shrink(),
+            title: new Center(
+                child: Text("Erklärung")
             ),
             children: [
-            ExpansionTile(
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text("Erklärung"),
-                children: [Text("datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata",textAlign: TextAlign.center,)],
-            ),
-               ExpansionTile(
-                title: Text("Notizen"),
-                controlAffinity: ListTileControlAffinity.leading,
-                children: <Widget>[
-                  TextField(
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    ),
-                  ),
-                  Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [TextButton(
-                        onPressed:  () => {},
-                        child: Text("Speichern"),
-                      ),],
-                    ),
-                  ),
-                ],
-                )
-              ],)
+              Text(
+                beschreibung,
+                textAlign: TextAlign.center,
+              )
+            ],
           ),
-        );
+          ExpansionTile(
+            trailing: SizedBox.shrink(),
+            title: new Center(
+                child: Text("Notizen")
+            ),
+            children: <Widget>[
+              TextField(
+                controller: notizenCont,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => {
+                      FocusScope.of(context).unfocus()
+                      },
+                      child: Text("Speichern"),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        ],
+      )),
+    );
   }
 }
