@@ -67,8 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => onFitness(items: [
-              CardItem("titel", "beschreibung",AssetImage('exercises/meteorid.png')),
-              CardItem("Sit-Ups", "hahah opfer",AssetImage('exercises/meteorid.png')),
+              CardItem("titel", "beschreibung",AssetImage('exercises/')),
+              CardItem("Sit-Ups", "hahah opfer",AssetImage('exercises/meteoroid.png')),
             ],))
           );
         },
