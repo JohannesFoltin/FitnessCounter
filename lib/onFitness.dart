@@ -16,32 +16,57 @@ class onFitness extends StatefulWidget {
 class _onFitness extends State<onFitness> {
   final List<ListItem> items;
 
+  void tot(){Navigator.pop(context);}
+
+  void removeItem(int i) {
+    if (items.length == 1) tot();
+    setState(() {
+      items.removeAt(i);
+    });
+  }
+
   _onFitness(this.items);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        children:[
-          Expanded(child:
-            ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return item.buildCard(context);
-            }
-            )
+        children: [
+          Expanded(
+              child: ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    return item.buildCard(context, removeItem, index);
+                  })),
+          TextButton(
+            onPressed: () => showDialog<String>(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                title: const Text(' Willst du das Training wirklich abbrechen?'),
+                content: const Text('Bereits eingetragende Werte gehen nicht verloren!'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => {Navigator.pop(context),tot()},
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
             ),
-          TextButton(onPressed: ()=>{},child: Text("Training abbrechen"),),
+            child: Text("Training abbrechen"),
+          ),
         ],
-
       ),
     );
   }
 }
 
 abstract class ListItem {
-  Widget buildCard(BuildContext context);
+  Widget buildCard(BuildContext context, Function r, int index);
 }
 
 class CardItem implements ListItem {
@@ -49,15 +74,17 @@ class CardItem implements ListItem {
   final String beschreibung;
   final AssetImage pictureAsset;
 
-  CardItem(this.titel, this.beschreibung,this.pictureAsset);
+  CardItem(this.titel, this.beschreibung, this.pictureAsset);
 
   TextEditingController lastValueCont = new TextEditingController();
   TextEditingController notizenCont = new TextEditingController();
 
   @override
-  Widget buildCard(BuildContext context) {
-    lastValueCont.selection = TextSelection.fromPosition(TextPosition(offset: lastValueCont.text.length));
-    notizenCont.selection = TextSelection.fromPosition(TextPosition(offset: notizenCont.text.length));
+  Widget buildCard(BuildContext context, Function r, int i) {
+    lastValueCont.selection = TextSelection.fromPosition(
+        TextPosition(offset: lastValueCont.text.length));
+    notizenCont.selection = TextSelection.fromPosition(
+        TextPosition(offset: notizenCont.text.length));
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final prefs = await SharedPreferences.getInstance();
       lastValueCont.text = prefs.getString(titel + "_lastValue") ?? "0";
@@ -68,9 +95,10 @@ class CardItem implements ListItem {
     });
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final prefs = await SharedPreferences.getInstance();
-      notizenCont.text = prefs.getString(titel + "_lastNotiz") ?? "Schreib was rein";
+      notizenCont.text =
+          prefs.getString(titel + "_lastNotiz") ?? "Schreib was rein";
     });
-    notizenCont.addListener(() async{
+    notizenCont.addListener(() async {
       final prefs = await SharedPreferences.getInstance();
       prefs.setString(titel + "_lastNotiz", notizenCont.text);
     });
@@ -96,16 +124,12 @@ class CardItem implements ListItem {
         ),
         trailing: IconButton(
           icon: Icon(Icons.check),
-          onPressed: () => {
-            //ToDO
-          },
+          onPressed: () => {r(i)},
         ),
         children: [
           ExpansionTile(
             trailing: SizedBox.shrink(),
-            title: new Center(
-                child: Text("Erklärung")
-            ),
+            title: new Center(child: Text("Erklärung")),
             children: [
               Text(
                 beschreibung,
@@ -115,19 +139,14 @@ class CardItem implements ListItem {
           ),
           ExpansionTile(
             trailing: SizedBox.shrink(),
-            title: new Center(
-                child: Text("Bild")
-            ),
+            title: new Center(child: Text("Bild")),
             children: [
               Image(image: pictureAsset),
             ],
           ),
-
           ExpansionTile(
             trailing: SizedBox.shrink(),
-            title: new Center(
-                child: Text("Notizen")
-            ),
+            title: new Center(child: Text("Notizen")),
             children: <Widget>[
               TextField(
                 controller: notizenCont,
@@ -135,18 +154,15 @@ class CardItem implements ListItem {
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 decoration: new InputDecoration(
-                  enabledBorder: const OutlineInputBorder(
-
-                  ),),
+                  enabledBorder: const OutlineInputBorder(),
+                ),
               ),
               Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () => {
-                      FocusScope.of(context).unfocus()
-                      },
+                      onPressed: () => {FocusScope.of(context).unfocus()},
                       child: Text("Speichern"),
                     ),
                   ],
