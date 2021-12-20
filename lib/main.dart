@@ -23,10 +23,11 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Fitness Tracker'),
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -60,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        centerTitle: true,
       ),
       body: Center(
         child: TextButton(
@@ -67,16 +69,16 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => onFitness(items: [
-              CardItem("Flachbankdrücken Maschine", flachbankdruecken_Maschine_Beschreibung,AssetImage('exercises/flachbankdruecken_Maschine.png')),
-              CardItem("Butterfly", butterflyBeschreibung,AssetImage('exercises/butterfly-maschine.jpg')),
-              CardItem("Latzug zur Brust",latzugzurBrustB,AssetImage('exercises/latzugzurBrust.png')),
-              CardItem("Rudern am Kabel",rudernamKabelB,AssetImage('exercises/rudern-am-kabelzug.gif')),
-              CardItem("Seitheben Kurzhanteln",seithebenKurzhantelnB,AssetImage('exercises/seitenheben_mit_kurzhanteln.jpg')),
-              CardItem("Scottcurls am Gerät",szCurlsB,AssetImage('exercises/scottcurls_maschine.jpg')),
-              CardItem("Trizepsdrücken am Kabel",trizepsdrueckenamKabelB,AssetImage('exercises/trizepsdrückenamKabel.png')),
-              CardItem("Beinpresse",beinpresseB,AssetImage('exercises/beinpresse.gif')),
-              CardItem("Beincurls",beincurlsB,AssetImage('exercises/beincurls.gif')),
-              CardItem("Crunch",crunchB,AssetImage('exercises/crunsh.png')),
+              CardItem("Flachbankdrücken Maschine", flachbankdruecken_Maschine_Beschreibung,AssetImage('exercises/flachbankdruecken_Maschine.png'),HexColor.fromHex("#ac4bb4")),
+              CardItem("Butterfly", butterflyBeschreibung,AssetImage('exercises/butterfly-maschine.jpg'),HexColor.fromHex("#ac4bb4")),
+              CardItem("Latzug zur Brust",latzugzurBrustB,AssetImage('exercises/latzugzurBrust.png'),HexColor.fromHex("#c5118d")),
+              CardItem("Rudern am Kabel",rudernamKabelB,AssetImage('exercises/rudern-am-kabelzug.gif'),HexColor.fromHex("#c5118d")),
+              CardItem("Seitheben Kurzhanteln",seithebenKurzhantelnB,AssetImage('exercises/seitenheben_mit_kurzhanteln.jpg'),HexColor.fromHex("#d32c60")),
+              CardItem("Beinpresse",beinpresseB,AssetImage('exercises/beinpresse.gif'),HexColor.fromHex("#ffc41d")),
+              CardItem("Beincurls",beincurlsB,AssetImage('exercises/beincurls.gif'),HexColor.fromHex("#ffc41d")),
+              CardItem("Scottcurls am Gerät",szCurlsB,AssetImage('exercises/scottcurls_maschine.jpg'),HexColor.fromHex("#a7eb7b")),
+              CardItem("Trizepsdrücken am Kabel",trizepsdrueckenamKabelB,AssetImage('exercises/trizepsdrückenamKabel.png'),HexColor.fromHex("#68d9f3")),
+              CardItem("Bauchmaschine",crunchB,AssetImage('exercises/crunsh.png'),HexColor.fromHex("#00718f")),
             ],))
           );
         },
@@ -97,4 +99,19 @@ class _MyHomePageState extends State<MyHomePage> {
   String beincurlsB="Das Fußpolster stellst du so ein wie bei der Fitness Übung zuvor. Teste die Ausführung anfangs mit leichtem Gewicht, um dich an das Training zu gewöhnen. Aus der Kraft deiner hinteren Oberschenkelmuskeln, ziehst du die Polsterung ohne Ruck nach oben. Kontrolliere die senkrechte Haltung deiner Unterschenkel im Spiegel und lasse sie dann wieder runter. Achte besonders darauf, dass du die Kraft bei den Curls, aus beiden Oberschenkeln gleichmäßig generierst. Unten streckst du die Beine wieder nicht vollständig, um die Muskelspannung nicht zu verlieren. Das Gewicht an dem Gerät, darf sich bei den Beincurls liegend zwischendurch ebenfalls nicht absetzen.";
   String crunchB = "Bei einem klassischen geraden Crunch legen Sie sich mit Ihrem Rücken auf den Boden. Winkeln Sie die Beine an (etwa 90 Grad), sodass diese im rechten Winkel zur Hüfte stehen. Die Arme zur Seite nehmen und mit den Fingerspitzen sachte die Schläfen berühren – und nicht am Kopf ziehen! Heben Sie nun mit der Kraft aus der Rumpfmuskulatur Ihren Oberkörper, bis die Schulterblätter den Boden nicht mehr berühren – mehr muss nicht sein. Den Rücken dabei möglichst gerade, den Kopf stets in der Linie Ihres Oberkörpers halten. Ein paar Sekunden die Endposition halten, dann Oberkörper langsam und kontrolliert absenken. In der niedrigsten Position stets die Muskelspannung im Bauch aufrechthalten. Wenn’s brennt, machen Sie es richtig. Tipp: Bei Bauchpressen mit angewinkelten Beinen die Fußspitzen anheben. Folge: Sie drücken die Fersen fester auf den Boden. "+"So tragen die Hilfsmuskeln kaum zu der Bewegung bei, was die Bauchmuskulatur stärker belastet";
 }
+extension HexColor on Color {
+  /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
+  static Color fromHex(String hexString) {
+    final buffer = StringBuffer();
+    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    buffer.write(hexString.replaceFirst('#', ''));
+    return Color(int.parse(buffer.toString(), radix: 16));
+  }
 
+  /// Prefixes a hash sign if [leadingHashSign] is set to `true` (default is `true`).
+  String toHex({bool leadingHashSign = true}) => '${leadingHashSign ? '#' : ''}'
+      '${alpha.toRadixString(16).padLeft(2, '0')}'
+      '${red.toRadixString(16).padLeft(2, '0')}'
+      '${green.toRadixString(16).padLeft(2, '0')}'
+      '${blue.toRadixString(16).padLeft(2, '0')}';
+}

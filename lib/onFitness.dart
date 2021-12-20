@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fitness_f/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,54 +13,165 @@ class onFitness extends StatefulWidget {
   final List<ListItem> items;
 
   @override
-  _onFitness createState() => _onFitness(items);
+  _onFitness createState() => _onFitness();
 }
 
 class _onFitness extends State<onFitness> {
-  final List<ListItem> items;
+  bool run = false;
+  late Stopwatch _stopwatch;
+  late Timer _timer;
 
-  void tot(){Navigator.pop(context);}
-
-  void removeItem(int i) {
-    if (items.length == 1) tot();
-    setState(() {
-      items.removeAt(i);
+  @override
+  void initState() {
+    super.initState();
+    _stopwatch = new Stopwatch();
+    _timer = new Timer.periodic(new Duration(milliseconds: 30), (timer) {
+      setState(() {});
     });
   }
 
-  _onFitness(this.items);
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void tot() {
+    Navigator.pop(context);
+  }
+  void handleStartStop() {
+    if (_stopwatch.isRunning) {
+      _stopwatch.stop();
+    } else {
+      _stopwatch.start();
+    }
+    setState(() {});
+  }
+
+  void removeItem(CardItem c) {
+    if (widget.items.length == 1) tot();
+    setState(() {
+      widget.items.remove(c);
+    });
+  }
+
+  String formatTime(int milliseconds) {
+    var secs = milliseconds ~/ 1000;
+    var hours = (secs ~/ 3600).toString().padLeft(2, '0');
+    var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
+    var seconds = (secs % 60).toString().padLeft(2, '0');
+    return "$hours:$minutes:$seconds";
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: HexColor.fromHex("#006666"),
+        automaticallyImplyLeading: false,
+        title: Text("Training"),
+        actions: <Widget>[
+          Center(
+          child:Text(
+            formatTime(_stopwatch.elapsedMilliseconds),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ))
+        ],
+      ),
       body: Column(
         children: [
           Expanded(
               child: ListView.builder(
-                  itemCount: items.length,
+                  itemCount: widget.items.length,
                   itemBuilder: (context, index) {
-                    final item = items[index];
-                    return item.buildCard(context, removeItem, index);
+                    final item = widget.items[index];
+                    return item.buildCard(context, removeItem);
                   })),
-          TextButton(
-            onPressed: () => showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text(' Willst du das Training wirklich abbrechen?'),
-                content: const Text('Bereits eingetragende Werte gehen nicht verloren!'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'Cancel'),
-                    child: const Text('Cancel'),
-                  ),
-                  TextButton(
-                    onPressed: () => {Navigator.pop(context),tot()},
-                    child: const Text('OK'),
-                  ),
+          Container(
+            child: Row(
+              children: [
+                if (run == false) ...[
+                  Expanded(
+                      child: TextButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(HexColor.fromHex("#008060")),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ))),
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                    ),
+                    onPressed: () => {
+                      setState(() {
+                        run = !run;
+                        handleStartStop();
+                      })
+                    },
+                  ))
+                ] else ...[
+                  Expanded(
+                      flex: 3,
+                      child: TextButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors.orange),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                            ))),
+                        child: Icon(
+                          Icons.pause,
+                          color: Colors.white,
+                        ),
+                        onPressed: () => {
+                          setState(() {
+                            run = !run;
+                            handleStartStop();
+                          })
+                        },
+                      ))
                 ],
-              ),
+                Expanded(
+                    child: TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(HexColor.fromHex("#990000")),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                              ))),
+                  child: Icon(
+                    Icons.stop,
+                    color: Colors.white,
+                  ),
+                  onPressed: () => showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                            actionsAlignment: MainAxisAlignment.center,
+                            title: const Text(
+                                'Willst du das Training wirklich abbrechen?'),
+                            content: const Text(
+                                'Bereits eingetragende Werte gehen nicht verloren!'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () =>
+                                    {Navigator.pop(context), tot()},
+                                child: const Text('OK'),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(context, 'Cancel'),
+                                child: const Text('Cancel'),
+                              ),
+                            ],
+                          )),
+                ))
+              ],
             ),
-            child: Text("Training abbrechen"),
           ),
         ],
       ),
@@ -66,44 +180,52 @@ class _onFitness extends State<onFitness> {
 }
 
 abstract class ListItem {
-  Widget buildCard(BuildContext context, Function r, int index);
+  Widget buildCard(BuildContext context, Function r);
 }
 
 class CardItem implements ListItem {
   final String titel;
   final String beschreibung;
   final AssetImage pictureAsset;
+  final Color bcolor;
 
-  CardItem(this.titel, this.beschreibung, this.pictureAsset);
+  CardItem(this.titel, this.beschreibung, this.pictureAsset,this.bcolor);
 
   TextEditingController lastValueCont = new TextEditingController();
   TextEditingController notizenCont = new TextEditingController();
 
   @override
-  Widget buildCard(BuildContext context, Function r, int i) {
+  Widget buildCard(BuildContext context, Function r) {
     lastValueCont.selection = TextSelection.fromPosition(
         TextPosition(offset: lastValueCont.text.length));
+
     notizenCont.selection = TextSelection.fromPosition(
         TextPosition(offset: notizenCont.text.length));
+
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final prefs = await SharedPreferences.getInstance();
       lastValueCont.text = prefs.getString(titel + "_lastValue") ?? "0";
     });
+
     lastValueCont.addListener(() async {
       final prefs = await SharedPreferences.getInstance();
       prefs.setString(titel + "_lastValue", lastValueCont.text);
     });
+
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final prefs = await SharedPreferences.getInstance();
       notizenCont.text =
           prefs.getString(titel + "_lastNotiz") ?? "Schreib was rein";
     });
+
     notizenCont.addListener(() async {
       final prefs = await SharedPreferences.getInstance();
       prefs.setString(titel + "_lastNotiz", notizenCont.text);
     });
+
     return Visibility(
       child: Card(
+        color: bcolor,
           child: ExpansionTile(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,9 +244,11 @@ class CardItem implements ListItem {
             ),
           ],
         ),
-        trailing: IconButton(
-          icon: Icon(Icons.check),
-          onPressed: () => {r(i)},
+        trailing: ElevatedButton(
+          child: Icon(Icons.check,),
+          onPressed: () => {r(this)},
+          style: ElevatedButton.styleFrom(
+              shape: CircleBorder(), padding: EdgeInsets.all(10)),
         ),
         children: [
           ExpansionTile(
