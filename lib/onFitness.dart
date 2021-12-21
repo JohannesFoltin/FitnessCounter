@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:fitness_f/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class onFitness extends StatefulWidget {
@@ -10,31 +9,24 @@ class onFitness extends StatefulWidget {
     Key? key,
     required this.items,
   }) : super(key: key);
+
   final List<ListItem> items;
 
   @override
   _onFitness createState() => _onFitness();
+
+  static String formatTime(int milliseconds) {
+    var secs = milliseconds ~/ 1000;
+    var hours = (secs ~/ 3600).toString().padLeft(2, '0');
+    var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
+    var seconds = (secs % 60).toString().padLeft(2, '0');
+    return "$hours:$minutes:$seconds";
+  }
 }
 
 class _onFitness extends State<onFitness> {
   bool run = false;
-  late Stopwatch _stopwatch;
-  late Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _stopwatch = new Stopwatch();
-    _timer = new Timer.periodic(new Duration(milliseconds: 30), (timer) {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
+  Stopwatch _stopwatch = new Stopwatch();
 
   void tot() {
     Navigator.pop(context);
@@ -45,22 +37,12 @@ class _onFitness extends State<onFitness> {
     } else {
       _stopwatch.start();
     }
-    setState(() {});
   }
-
   void removeItem(CardItem c) {
     if (widget.items.length == 1) tot();
     setState(() {
       widget.items.remove(c);
     });
-  }
-
-  String formatTime(int milliseconds) {
-    var secs = milliseconds ~/ 1000;
-    var hours = (secs ~/ 3600).toString().padLeft(2, '0');
-    var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
-    var seconds = (secs % 60).toString().padLeft(2, '0');
-    return "$hours:$minutes:$seconds";
   }
 
   @override
@@ -70,13 +52,7 @@ class _onFitness extends State<onFitness> {
         backgroundColor: HexColor.fromHex("#006666"),
         automaticallyImplyLeading: false,
         title: Text("Training"),
-        actions: <Widget>[
-          Center(
-          child:Text(
-            formatTime(_stopwatch.elapsedMilliseconds),
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ))
-        ],
+        actions: <Widget>[Center(child: TimerField(_stopwatch))],
       ),
       body: Column(
         children: [
@@ -94,8 +70,8 @@ class _onFitness extends State<onFitness> {
                   Expanded(
                       child: TextButton(
                     style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(HexColor.fromHex("#008060")),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            HexColor.fromHex("#008060")),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
@@ -138,12 +114,12 @@ class _onFitness extends State<onFitness> {
                 Expanded(
                     child: TextButton(
                   style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(HexColor.fromHex("#990000")),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          HexColor.fromHex("#990000")),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                              ))),
+                        borderRadius: BorderRadius.circular(18.0),
+                      ))),
                   child: Icon(
                     Icons.stop,
                     color: Colors.white,
@@ -189,7 +165,7 @@ class CardItem implements ListItem {
   final AssetImage pictureAsset;
   final Color bcolor;
 
-  CardItem(this.titel, this.beschreibung, this.pictureAsset,this.bcolor);
+  CardItem(this.titel, this.beschreibung, this.pictureAsset, this.bcolor);
 
   TextEditingController lastValueCont = new TextEditingController();
   TextEditingController notizenCont = new TextEditingController();
@@ -225,77 +201,113 @@ class CardItem implements ListItem {
 
     return Visibility(
       child: Card(
-        color: bcolor,
+          color: bcolor,
           child: ExpansionTile(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              titel,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  titel,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  width: 50,
+                  child: TextField(
+                    controller: lastValueCont,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(
-              width: 50,
-              child: TextField(
-                controller: lastValueCont,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(),
+            trailing: ElevatedButton(
+              child: Icon(
+                Icons.check,
               ),
+              onPressed: () => {r(this)},
+              style: ElevatedButton.styleFrom(
+                  shape: CircleBorder(), padding: EdgeInsets.all(10)),
             ),
-          ],
-        ),
-        trailing: ElevatedButton(
-          child: Icon(Icons.check,),
-          onPressed: () => {r(this)},
-          style: ElevatedButton.styleFrom(
-              shape: CircleBorder(), padding: EdgeInsets.all(10)),
-        ),
-        children: [
-          ExpansionTile(
-            trailing: SizedBox.shrink(),
-            title: new Center(child: Text("Erklärung")),
             children: [
-              Text(
-                beschreibung,
-                textAlign: TextAlign.center,
+              ExpansionTile(
+                trailing: SizedBox.shrink(),
+                title: new Center(child: Text("Erklärung")),
+                children: [
+                  Text(
+                    beschreibung,
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+              ExpansionTile(
+                trailing: SizedBox.shrink(),
+                title: new Center(child: Text("Bild")),
+                children: [
+                  Image(image: pictureAsset),
+                ],
+              ),
+              ExpansionTile(
+                trailing: SizedBox.shrink(),
+                title: new Center(child: Text("Notizen")),
+                children: <Widget>[
+                  TextField(
+                    controller: notizenCont,
+                    minLines: 5,
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
+                    decoration: new InputDecoration(
+                      enabledBorder: const OutlineInputBorder(),
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => {FocusScope.of(context).unfocus()},
+                          child: Text("Speichern"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               )
             ],
-          ),
-          ExpansionTile(
-            trailing: SizedBox.shrink(),
-            title: new Center(child: Text("Bild")),
-            children: [
-              Image(image: pictureAsset),
-            ],
-          ),
-          ExpansionTile(
-            trailing: SizedBox.shrink(),
-            title: new Center(child: Text("Notizen")),
-            children: <Widget>[
-              TextField(
-                controller: notizenCont,
-                minLines: 5,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                decoration: new InputDecoration(
-                  enabledBorder: const OutlineInputBorder(),
-                ),
-              ),
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => {FocusScope.of(context).unfocus()},
-                      child: Text("Speichern"),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )
-        ],
-      )),
+          )),
+    );
+  }
+}
+
+class TimerField extends StatefulWidget {
+  TimerField(this.stopwatchi);
+
+  final Stopwatch stopwatchi;
+
+  TimerFieldState createState() => TimerFieldState();
+}
+
+class TimerFieldState extends State<TimerField> {
+  late Timer _timer;
+
+  @override
+  void initState() {
+    _timer = new Timer.periodic(new Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      onFitness.formatTime(widget.stopwatchi.elapsedMilliseconds),
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
     );
   }
 }
