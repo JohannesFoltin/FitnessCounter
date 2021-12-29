@@ -231,23 +231,6 @@ class CardItem implements ListItem {
             children: [
               ExpansionTile(
                 trailing: SizedBox.shrink(),
-                title: new Center(child: Text("Erklärung")),
-                children: [
-                  Text(
-                    beschreibung,
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
-              ExpansionTile(
-                trailing: SizedBox.shrink(),
-                title: new Center(child: Text("Bild")),
-                children: [
-                  Image(image: pictureAsset),
-                ],
-              ),
-              ExpansionTile(
-                trailing: SizedBox.shrink(),
                 title: new Center(child: Text("Notizen")),
                 children: <Widget>[
                   TextField(
@@ -271,7 +254,24 @@ class CardItem implements ListItem {
                     ),
                   ),
                 ],
-              )
+              ),
+              ExpansionTile(
+                trailing: SizedBox.shrink(),
+                title: new Center(child: Text("Erklärung")),
+                children: [
+                  Text(
+                    beschreibung,
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+              ExpansionTile(
+                trailing: SizedBox.shrink(),
+                title: new Center(child: Text("Bild")),
+                children: [
+                  Image(image: pictureAsset),
+                ],
+              ),
             ],
           )),
     );
