@@ -173,7 +173,7 @@ class _onFitness extends State<onFitness> {
   //TODO FIX ME!!!
   void removeItem(CardItem c) {
     uebungenLeft.remove(c);
-    UebungsErgebnisse uebungsErgebniss = new UebungsErgebnisse(c.name,c.lastValueCont.text,0 as BigInt);
+    UebungsErgebnisse uebungsErgebniss = new UebungsErgebnisse(c.name,c.lastValueCont.text,BigInt.zero);
     training.uebungErgebnisse.add(uebungsErgebniss);
     if(uebungenLeft.isEmpty){
       tot(training);
@@ -244,6 +244,7 @@ class CardItem implements ListItem {
               uebung.name,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
+
             trailing: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

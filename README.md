@@ -7,7 +7,6 @@ A Flutter project by me.
 - Am Schluss Trainingsübersicht mit zeit etc
 - Daten speichern
 - Fehlende Bilder
-- Refactoring
 - Eigende Trainingspläne erstellen
 - Bei Pause keine Übungen mehr Beenden
 
