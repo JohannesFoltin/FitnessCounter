@@ -7,13 +7,9 @@ import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class onFitness extends StatefulWidget {
-  onFitness({
-    Key? key,
-    required this.appData
-  }) : super(key: key);
+  onFitness({Key? key, required this.appData}) : super(key: key);
 
   final AppData appData;
-
 
   @override
   _onFitness createState() => _onFitness();
@@ -32,11 +28,15 @@ class _onFitness extends State<onFitness> {
   Stopwatch _stopwatch = new Stopwatch();
   late List<CardItem> uebungenLeft;
   late Training training;
+
   @override
   void initState() {
     // TODO: implement initState
     _stopwatch.start();
-    uebungenLeft =  widget.appData.getUebungs().map((u) => new CardItem(widget.appData, u.name)).toList();
+    uebungenLeft = widget.appData
+        .getUebungs()
+        .map((u) => new CardItem(widget.appData, u.name))
+        .toList();
     training = new Training(BigInt.zero, BigInt.zero, []);
     super.initState();
   }
@@ -130,7 +130,9 @@ class _onFitness extends State<onFitness> {
                     'Bereits eingetragende Werte gehen nicht verloren!'),
                 actions: <Widget>[
                   TextButton(
-                    onPressed: () => {Navigator.pop(context) /*TODO*/ },
+                    onPressed: () => {
+                      Navigator.pop(context) /*TODO*/
+                    },
                     child: const Text('OK'),
                   ),
                   TextButton(
@@ -170,12 +172,14 @@ class _onFitness extends State<onFitness> {
     Navigator.pop(context);
   }
 
-  //TODO FIX ME!!!
   void removeItem(CardItem c) {
-    uebungenLeft.remove(c);
-    UebungsErgebnisse uebungsErgebniss = new UebungsErgebnisse(c.name,c.lastValueCont.text,BigInt.zero);
+    setState(() {
+      uebungenLeft.remove(c);
+    });
+    UebungsErgebnisse uebungsErgebniss =
+        new UebungsErgebnisse(c.name, c.lastValueCont.text, BigInt.zero);
     training.uebungErgebnisse.add(uebungsErgebniss);
-    if(uebungenLeft.isEmpty){
+    if (uebungenLeft.isEmpty) {
       tot(training);
     }
   }
@@ -198,10 +202,10 @@ class CardItem implements ListItem {
   late final String name;
   late Uebung uebung;
 
-  CardItem(AppData appData, String name){
-   this.uebung = appData.getUebungByName(name);
-   this.appData = appData;
-   this.name = name;
+  CardItem(AppData appData, String name) {
+    this.uebung = appData.getUebungByName(name);
+    this.appData = appData;
+    this.name = name;
   }
 
   TextEditingController lastValueCont = new TextEditingController();
@@ -236,36 +240,33 @@ class CardItem implements ListItem {
       prefs.setString(uebung.name + "_lastNotiz", notizenCont.text);
     });
 
-    return Visibility(
-      child: Card(
-          color: HexColor.fromHex(uebung.color),
-          child: ExpansionTile(
-            title: Text(
-              uebung.name,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-
-            trailing: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: 50,
-                  child: TextField(
-                    controller: lastValueCont,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(),
-                  ),
-                ),
-                _buildCheckButton(r),
-              ],
-            ),
+    return Card(
+        color: HexColor.fromHex(uebung.color),
+        child: ExpansionTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildNotizen(context),
-              _buildBeschreibung(),
-              _buildBild(),
+              Text(
+                uebung.name,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                width: 50,
+                child: TextField(
+                  controller: lastValueCont,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(),
+                ),
+              ),
             ],
-          )),
-    );
+          ),
+          trailing: _buildCheckButton(r),
+          children: [
+            _buildNotizen(context),
+            _buildBeschreibung(),
+            _buildBild(),
+          ],
+        ));
   }
 
   ElevatedButton _buildCheckButton(Function r) {
@@ -345,7 +346,7 @@ class TimerFieldState extends State<TimerField> {
 
   @override
   void initState() {
-    _timer = new Timer.periodic(new Duration(seconds: 1), (timer) {
+    _timer = new Timer.periodic(new Duration(seconds: 2), (timer) {
       setState(() {});
     });
     super.initState();

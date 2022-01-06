@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:fitness_f/views/onFitness.dart';
+import 'package:fitness_f/views/testScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -57,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   AppData appData = new AppData([], []);
 
   void initState() {
+    print("initState");
     loadAppData();
     super.initState();
   }
@@ -70,6 +72,24 @@ class _MyHomePageState extends State<MyHomePage> {
         "#ac4bb4",
         "",
         ""));
+    tmp.add(Uebung("Butterfly", widget.butterflyBeschreibung,
+        'exercises/butterfly-maschine.jpg', "#ac4bb4", "", ""));
+    tmp.add(Uebung("Latzug zur Brust", widget.latzugzurBrustB,
+        'exercises/latzugzurBrust.png', "#c5118d", "", ""));
+    tmp.add(Uebung("Rudern am Kabel", widget.rudernamKabelB,
+        'exercises/rudern-am-kabelzug.gif', "#c5118d", "", ""));
+    tmp.add(Uebung("Seitheben Kurzhanteln", widget.seithebenKurzhantelnB,
+        'exercises/seitenheben_mit_kurzhanteln.jpg', "#d32c60", "", ""));
+    tmp.add(Uebung("Beinpresse", widget.beinpresseB, 'exercises/beinpresse.gif',
+        "#ffc41d", "", ""));
+    tmp.add(Uebung("Beincurls", widget.beincurlsB, 'exercises/beincurls.gif',
+        "#ffc41d", "", ""));
+    tmp.add(Uebung("Scottcurls am Gerät", widget.szCurlsB,
+        'exercises/scottcurls_maschine.jpg', "#a7eb7b", "", ""));
+    tmp.add(Uebung("Trizepsdrücken am Kabel", widget.trizepsdrueckenamKabelB,
+        'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", ""));
+    tmp.add(Uebung("Bauchmaschine", widget.crunchB, 'exercises/crunsh.jpeg',
+        "#00718f", "", ""));
     appData.uebungs = tmp;
   }
 
@@ -83,46 +103,48 @@ class _MyHomePageState extends State<MyHomePage> {
     final prefs = await SharedPreferences.getInstance();
     appData = AppData.fromJson(jsonDecode(
         prefs.getString("BuBu") ?? "{\"uebungs\":[], \"trainings\":[]}"));
+    print("loaded");
     if (appData.uebungs.isEmpty) {
-      initUebungen();
-    }
+       initUebungen();
+       print("Übungen init");
+     }
   }
 
   @override
   Widget build(BuildContext context) {
-    loadAppData();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         centerTitle: true,
       ),
       body: Center(
-          child: TextButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => onFitness(appData: appData)
-              )
-          ).then((_){
-            saveAppData(appData);
-          });
-        },
-        child: Text("Start Training"),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => onFitness(appData: appData)))
+                  .then((_) {
+                saveAppData(appData);
+              });
+            },
+            child: Text("Start Training"),
+          ),
+          TextButton(onPressed: () => {
+            ichhassemeinLeben()
+          }, child: Text("Reset Übungnen")),
+          TextButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => testScreen()));}, child: Text("Go to Test Screen"))
+        ],
       )),
     );
-    /*[
-              CardItem(),
-              CardItem("Butterfly", butterflyBeschreibung,AssetImage('exercises/butterfly-maschine.jpg'),HexColor.fromHex("#ac4bb4")),
-              CardItem("Latzug zur Brust",latzugzurBrustB,AssetImage('exercises/latzugzurBrust.png'),HexColor.fromHex("#c5118d")),
-              CardItem("Rudern am Kabel",rudernamKabelB,AssetImage('exercises/rudern-am-kabelzug.gif'),HexColor.fromHex("#c5118d")),
-              CardItem("Seitheben Kurzhanteln",seithebenKurzhantelnB,AssetImage('exercises/seitenheben_mit_kurzhanteln.jpg'),HexColor.fromHex("#d32c60")),
-              CardItem("Beinpresse",beinpresseB,AssetImage('exercises/beinpresse.gif'),HexColor.fromHex("#ffc41d")),
-              CardItem("Beincurls",beincurlsB,AssetImage('exercises/beincurls.gif'),HexColor.fromHex("#ffc41d")),
-              CardItem("Scottcurls am Gerät",szCurlsB,AssetImage('exercises/scottcurls_maschine.jpg'),HexColor.fromHex("#a7eb7b")),
-              CardItem("Trizepsdrücken am Kabel",trizepsdrueckenamKabelB,AssetImage('exercises/trizepsdrückenamKabel.png'),HexColor.fromHex("#68d9f3")),
-              CardItem("Bauchmaschine",crunchB,AssetImage('exercises/crunsh.jpeg'),HexColor.fromHex("#00718f")),
-            ]*/
+  }
+  ichhassemeinLeben(){
+    print("reset");
+    appData.uebungs = [];
+    saveAppData(appData);
   }
 }
 
