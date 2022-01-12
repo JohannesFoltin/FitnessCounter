@@ -23,8 +23,9 @@ class Uebung {
     this.notizen,
     this.einheit,
   );
-
-
+  setNotizen(String notiz){
+    this.notizen = notiz;
+  }
   factory Uebung.fromJson(Map<String, dynamic> json) => _$UebungFromJson(json);
 
   Map<String, dynamic> toJson() => _$UebungToJson(this);

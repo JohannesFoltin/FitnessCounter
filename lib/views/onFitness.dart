@@ -127,12 +127,10 @@ class _onFitness extends State<onFitness> {
                 actionsAlignment: MainAxisAlignment.center,
                 title: const Text('Willst du das Training wirklich abbrechen?'),
                 content: const Text(
-                    'Bereits eingetragende Werte gehen nicht verloren!'),
+                    'Bereits eingetragende Werte gehen nicht verloren! Notizen bleiben aber erhalten...'),
                 actions: <Widget>[
                   TextButton(
-                    onPressed: () => {
-                      Navigator.pop(context) /*TODO*/
-                    },
+                    onPressed: () => {Navigator.pop(context), Navigator.pop(context)},
                     child: const Text('OK'),
                   ),
                   TextButton(
@@ -202,14 +200,25 @@ class CardItem implements ListItem {
   late final String name;
   late Uebung uebung;
 
+  TextEditingController lastValueCont = new TextEditingController();
+  TextEditingController notizenCont = new TextEditingController();
+
   CardItem(AppData appData, String name) {
     this.uebung = appData.getUebungByName(name);
     this.appData = appData;
     this.name = name;
+    initValues();
   }
 
-  TextEditingController lastValueCont = new TextEditingController();
-  TextEditingController notizenCont = new TextEditingController();
+  initValues() {
+    if (appData.trainings.isNotEmpty) {
+      lastValueCont.text = appData.trainings.last.uebungErgebnisse
+          .firstWhere((element) => element.name == name)
+          .wert;
+    }
+    notizenCont.text =
+        appData.uebungs.firstWhere((element) => element.name == name).notizen;
+  }
 
   @override
   Widget buildCard(BuildContext context, Function r) {
@@ -219,54 +228,37 @@ class CardItem implements ListItem {
     notizenCont.selection = TextSelection.fromPosition(
         TextPosition(offset: notizenCont.text.length));
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      final prefs = await SharedPreferences.getInstance();
-      lastValueCont.text = prefs.getString(uebung.name + "_lastValue") ?? "0";
-    });
-
-    lastValueCont.addListener(() async {
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString(uebung.name + "_lastValue", lastValueCont.text);
-    });
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      final prefs = await SharedPreferences.getInstance();
-      notizenCont.text =
-          prefs.getString(uebung.name + "_lastNotiz") ?? "Schreib was rein";
-    });
-
-    notizenCont.addListener(() async {
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString(uebung.name + "_lastNotiz", notizenCont.text);
-    });
-
-    return Card(
-        color: HexColor.fromHex(uebung.color),
-        child: ExpansionTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                uebung.name,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                width: 50,
-                child: TextField(
-                  controller: lastValueCont,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10.0),
+      child: Card(
+          key: Key(name),
+          color: HexColor.fromHex(uebung.color),
+          child: ExpansionTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  uebung.name,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-              ),
+                SizedBox(
+                  width: 50,
+                  child: TextField(
+                    controller: lastValueCont,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(),
+                  ),
+                ),
+              ],
+            ),
+            trailing: _buildCheckButton(r),
+            children: [
+              _buildNotizen(context),
+              _buildBeschreibung(),
+              _buildBild(),
             ],
-          ),
-          trailing: _buildCheckButton(r),
-          children: [
-            _buildNotizen(context),
-            _buildBeschreibung(),
-            _buildBild(),
-          ],
-        ));
+          )),
+    );
   }
 
   ElevatedButton _buildCheckButton(Function r) {
@@ -322,7 +314,12 @@ class CardItem implements ListItem {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                onPressed: () => {FocusScope.of(context).unfocus()},
+                onPressed: () => {
+                  appData.uebungs
+                      .firstWhere((element) => element.name == name)
+                      .setNotizen(notizenCont.text),
+                  FocusScope.of(context).unfocus()
+                },
                 child: Text("Speichern"),
               ),
             ],
@@ -346,7 +343,7 @@ class TimerFieldState extends State<TimerField> {
 
   @override
   void initState() {
-    _timer = new Timer.periodic(new Duration(seconds: 2), (timer) {
+    _timer = new Timer.periodic(new Duration(seconds: 1), (timer) {
       setState(() {});
     });
     super.initState();

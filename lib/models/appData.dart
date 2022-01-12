@@ -7,6 +7,8 @@ import 'package:json_annotation/json_annotation.dart';
 part 'appData.g.dart';
 
 // Falls Probleme: run command: flutter pub run build_runner build
+// Wenn nicht dann: flutter pub run build_runner watch
+
 @JsonSerializable()
 class AppData{
 

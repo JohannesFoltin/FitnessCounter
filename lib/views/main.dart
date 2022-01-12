@@ -5,6 +5,9 @@ import 'package:fitness_f/views/onFitness.dart';
 import 'package:fitness_f/views/testScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:styled_widget/styled_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -19,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Fitness Tracker'),
+      home: MyHomePage(title: 'Fitness3000'),
     );
   }
 }
@@ -57,12 +60,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   AppData appData = new AppData([], []);
 
-  void initState() {
-    print("initState");
-    loadAppData();
-    super.initState();
-  }
-
   void initUebungen() {
     List<Uebung> tmp = [];
     tmp.add(Uebung(
@@ -99,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print("AppData Saved");
   }
 
-  loadAppData() async {
+   loadAppData() async {
     final prefs = await SharedPreferences.getInstance();
     appData = AppData.fromJson(jsonDecode(
         prefs.getString("BuBu") ?? "{\"uebungs\":[], \"trainings\":[]}"));
@@ -114,8 +111,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title,style: GoogleFonts.notoSans(),).textColor(Colors.black).fontSize(25),
         centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
       body: Center(
           child: Column(
@@ -123,7 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           TextButton(
             onPressed: () {
-              Navigator.push(
+              loadAppData();
+               Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => onFitness(appData: appData)))
