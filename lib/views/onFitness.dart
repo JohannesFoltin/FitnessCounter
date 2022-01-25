@@ -5,6 +5,7 @@ import 'package:fitness_f/views/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:styled_widget/styled_widget.dart';
 
 class onFitness extends StatefulWidget {
   onFitness({Key? key, required this.appData}) : super(key: key);
@@ -14,12 +15,15 @@ class onFitness extends StatefulWidget {
   @override
   _onFitness createState() => _onFitness();
 
-  static String formatTime(int milliseconds) {
+  static String formatTime(int milliseconds, bool returnHours) {
     var secs = milliseconds ~/ 1000;
     var hours = (secs ~/ 3600).toString().padLeft(2, '0');
     var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
     var seconds = (secs % 60).toString().padLeft(2, '0');
-    return "$hours:$minutes:$seconds";
+    if (returnHours)
+      return "$hours:$minutes:$seconds";
+    else
+      return "$minutes:$seconds";
   }
 }
 
@@ -28,6 +32,7 @@ class _onFitness extends State<onFitness> {
   Stopwatch _stopwatch = new Stopwatch();
   late List<CardItem> uebungenLeft;
   late Training training;
+  Color ButtonColor = Colors.orange;
 
   @override
   void initState() {
@@ -45,23 +50,66 @@ class _onFitness extends State<onFitness> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildUebungenList(),
-          Container(
-            child: Row(
-              children: [
-                if (run == false) ...[
-                  _buildStartButton()
-                ] else ...[
-                  _buildPauseButton()
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Container(
+                        height: 150,
+                        width: 150,
+                        color: ButtonColor,
+                        child: _buildTimeController(context)),
+                  )
                 ],
-                _buildStopButton(context)
-              ],
+              ),
             ),
-          ),
-        ],
+            Expanded(child: _buildUebungenList()),
+          ],
+        ),
       ),
+    );
+  }
+
+  TextButton _buildTimeController(BuildContext context) {
+    return TextButton(
+      onPressed: () => {
+        setState(() {
+          handleStartStop();
+          if (ButtonColor == Colors.orange) {
+            ButtonColor = HexColor.fromHex("#008060");
+          } else {
+            ButtonColor = Colors.orange;
+          }
+        })
+      },
+      onLongPress: () => {
+        showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+                  actionsAlignment: MainAxisAlignment.center,
+                  title:
+                      const Text('Willst du das Training wirklich abbrechen?'),
+                  content: const Text(
+                      'Bereits eingetragende Werte gehen nicht verloren! Notizen bleiben aber erhalten...'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () =>
+                          {Navigator.pop(context), Navigator.pop(context)},
+                      child: const Text('OK'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                  ],
+                )),
+      },
+      child: TimerField(_stopwatch, true),
     );
   }
 
@@ -69,100 +117,23 @@ class _onFitness extends State<onFitness> {
     return AppBar(
       backgroundColor: HexColor.fromHex("#006666"),
       automaticallyImplyLeading: false,
-      title: Text("Training"),
-      actions: <Widget>[Center(child: TimerField(_stopwatch))],
+      centerTitle: true,
+      title: Text("Training am " +
+          DateTime.now().day.toString() +
+          "." +
+          DateTime.now().month.toString() +
+          "." +
+          DateTime.now().year.toString()),
     );
   }
 
-  Expanded _buildUebungenList() {
-    return Expanded(
-        child: ListView.builder(
-            itemCount: uebungenLeft.length,
-            itemBuilder: (context, index) {
-              final item = uebungenLeft[index];
-              return item.buildCard(context, removeItem);
-            }));
-  }
-
-  Expanded _buildPauseButton() {
-    return Expanded(
-        flex: 3,
-        child: TextButton(
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.orange),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-              ))),
-          child: Icon(
-            Icons.pause,
-            color: Colors.white,
-          ),
-          onPressed: () => {
-            setState(() {
-              run = !run;
-              handleStartStop();
-            })
-          },
-        ));
-  }
-
-  Expanded _buildStopButton(BuildContext context) {
-    return Expanded(
-        child: TextButton(
-      style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(HexColor.fromHex("#990000")),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18.0),
-          ))),
-      child: Icon(
-        Icons.stop,
-        color: Colors.white,
-      ),
-      onPressed: () => showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-                actionsAlignment: MainAxisAlignment.center,
-                title: const Text('Willst du das Training wirklich abbrechen?'),
-                content: const Text(
-                    'Bereits eingetragende Werte gehen nicht verloren! Notizen bleiben aber erhalten...'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => {Navigator.pop(context), Navigator.pop(context)},
-                    child: const Text('OK'),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'Cancel'),
-                    child: const Text('Cancel'),
-                  ),
-                ],
-              )),
-    ));
-  }
-
-  Expanded _buildStartButton() {
-    return Expanded(
-        child: TextButton(
-      style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(HexColor.fromHex("#008060")),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18.0),
-          ))),
-      child: Icon(
-        Icons.play_arrow,
-        color: Colors.white,
-      ),
-      onPressed: () => {
-        setState(() {
-          run = !run;
-          handleStartStop();
-        })
-      },
-    ));
+  ListView _buildUebungenList() {
+    return ListView.builder(
+        itemCount: uebungenLeft.length,
+        itemBuilder: (context, index) {
+          final item = uebungenLeft[index];
+          return item.buildCard(context, removeItem);
+        });
   }
 
   void tot(Training training) {
@@ -185,8 +156,10 @@ class _onFitness extends State<onFitness> {
   void handleStartStop() {
     if (_stopwatch.isRunning) {
       _stopwatch.stop();
+      run = !run;
     } else {
       _stopwatch.start();
+      run = !run;
     }
   }
 }
@@ -199,6 +172,14 @@ class CardItem implements ListItem {
   late final AppData appData;
   late final String name;
   late Uebung uebung;
+  Stopwatch _stopwatch = new Stopwatch();
+
+  void _handleTimer() {
+    if (_stopwatch.isRunning)
+      _stopwatch.stop();
+    else
+      _stopwatch.start();
+  }
 
   TextEditingController lastValueCont = new TextEditingController();
   TextEditingController notizenCont = new TextEditingController();
@@ -263,12 +244,8 @@ class CardItem implements ListItem {
 
   ElevatedButton _buildCheckButton(Function r) {
     return ElevatedButton(
-      child: Icon(
-        Icons.check,
-      ),
+      child: Icon(Icons.check),
       onPressed: () => {r(this)},
-      style: ElevatedButton.styleFrom(
-          shape: CircleBorder(), padding: EdgeInsets.all(10)),
     );
   }
 
@@ -331,9 +308,10 @@ class CardItem implements ListItem {
 }
 
 class TimerField extends StatefulWidget {
-  TimerField(this.stopwatchi);
+  TimerField(this.stopwatchi, this.returnHours);
 
   final Stopwatch stopwatchi;
+  final bool returnHours;
 
   TimerFieldState createState() => TimerFieldState();
 }
@@ -357,9 +335,17 @@ class TimerFieldState extends State<TimerField> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      onFitness.formatTime(widget.stopwatchi.elapsedMilliseconds),
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-    );
+    if (widget.returnHours) {
+      return Text(
+        onFitness.formatTime(widget.stopwatchi.elapsedMilliseconds, true),
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+      );
+    } else {
+      return Text(
+        onFitness.formatTime(widget.stopwatchi.elapsedMilliseconds, false),
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      );
+    }
   }
 }
