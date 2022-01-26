@@ -75,8 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
         'exercises/latzugzurBrust.png', "#c5118d", "", ""));
     tmp.add(Uebung("Rudern am Kabel", widget.rudernamKabelB,
         'exercises/rudern-am-kabelzug.gif', "#c5118d", "", ""));
-    tmp.add(Uebung("Seitheben Kurzhanteln", widget.seithebenKurzhantelnB,
-        'exercises/seitenheben_mit_kurzhanteln.jpg', "#d32c60", "", ""));
+    tmp.add(Uebung("Seitenheben Kurzhanteln", widget.seithebenKurzhantelnB,
+        'exercises/seitheben_mit_kurzhanteln.jpg', "#d32c60", "", ""));
     tmp.add(Uebung("Beinpresse", widget.beinpresseB, 'exercises/beinpresse.gif',
         "#ffc41d", "", ""));
     tmp.add(Uebung("Beincurls", widget.beincurlsB, 'exercises/beincurls.gif',

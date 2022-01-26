@@ -4,6 +4,7 @@ import 'package:fitness_f/models/datalayer.dart';
 import 'package:fitness_f/views/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -33,7 +34,6 @@ class _onFitness extends State<onFitness> {
   late List<CardItem> uebungenLeft;
   late Training training;
   Color ButtonColor = Colors.orange;
-
   @override
   void initState() {
     // TODO: implement initState
@@ -56,14 +56,39 @@ class _onFitness extends State<onFitness> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: Container(
-                        height: 150,
-                        width: 150,
-                        color: ButtonColor,
-                        child: _buildTimeController(context)),
+                  Column(
+                    children: [
+                      Text("Zeit in der Übung"),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Container(
+                            height: 150,
+                            width: 150,
+                            color: ButtonColor,
+                            child: _buildTimeController(context)),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Pause Timer"),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Container(
+                          height: 100,
+                          width: 100,
+                          color: Colors.red,
+                          child: TextButton(
+                            onPressed: () =>{
+
+                            }, child: Text("1:30",style: TextStyle(color: Colors.black, fontSize: 18),),
+                          )
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -124,7 +149,33 @@ class _onFitness extends State<onFitness> {
           DateTime.now().month.toString() +
           "." +
           DateTime.now().year.toString()),
+      actions: [
+        IconButton(onPressed: ()=>{
+          _showFinishDialog(),
+        }, icon: Icon(Icons.check))
+      ],
     );
+  }
+
+  Future<String?> _showFinishDialog() {
+    return showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              actionsAlignment: MainAxisAlignment.center,
+              title:
+              const Text('Bist du fertig mit dem Training?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () =>
+                  {Navigator.pop(context), tot(training)},
+                  child: const Text('JAAAA'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('Noch nicht...'),
+                ),
+              ],
+            ));
   }
 
   ListView _buildUebungenList() {
@@ -149,7 +200,7 @@ class _onFitness extends State<onFitness> {
         new UebungsErgebnisse(c.name, c.lastValueCont.text, BigInt.zero);
     training.uebungErgebnisse.add(uebungsErgebniss);
     if (uebungenLeft.isEmpty) {
-      tot(training);
+      _showFinishDialog();
     }
   }
 
@@ -339,7 +390,7 @@ class TimerFieldState extends State<TimerField> {
       return Text(
         onFitness.formatTime(widget.stopwatchi.elapsedMilliseconds, true),
         style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+            fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),
       );
     } else {
       return Text(
