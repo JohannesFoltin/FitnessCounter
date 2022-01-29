@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => onFitness(appData: appData)))
+                          builder: (context) => OnFitness(appData: appData)))
                   .then((_) {
                 saveAppData(appData);
               });

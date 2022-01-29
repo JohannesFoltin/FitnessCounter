@@ -1,20 +1,19 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:fitness_f/views/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:styled_widget/styled_widget.dart';
+import 'package:simple_timer/simple_timer.dart';
 
-class onFitness extends StatefulWidget {
-  onFitness({Key? key, required this.appData}) : super(key: key);
+class OnFitness extends StatefulWidget {
+  OnFitness({Key? key, required this.appData}) : super(key: key);
 
   final AppData appData;
 
   @override
-  _onFitness createState() => _onFitness();
+  _OnFitness createState() => _OnFitness();
 
   static String formatTime(int milliseconds, bool returnHours) {
     var secs = milliseconds ~/ 1000;
@@ -28,15 +27,18 @@ class onFitness extends StatefulWidget {
   }
 }
 
-class _onFitness extends State<onFitness> {
+class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   bool run = true;
   Stopwatch _stopwatch = new Stopwatch();
   late List<CardItem> uebungenLeft;
   late Training training;
   Color ButtonColor = Colors.orange;
+  late TimerController _timerController;
+
   @override
   void initState() {
     // TODO: implement initState
+    _timerController = TimerController(this);
     _stopwatch.start();
     uebungenLeft = widget.appData
         .getUebungs()
@@ -77,16 +79,7 @@ class _onFitness extends State<onFitness> {
                       Text("Pause Timer"),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
-                        child: Container(
-                          height: 100,
-                          width: 100,
-                          color: Colors.red,
-                          child: TextButton(
-                            onPressed: () =>{
-
-                            }, child: Text("1:30",style: TextStyle(color: Colors.black, fontSize: 18),),
-                          )
-                        ),
+                        child: _buildCountdown(),
                       ),
                     ],
                   )
@@ -98,6 +91,33 @@ class _onFitness extends State<onFitness> {
         ),
       ),
     );
+  }
+
+  Container _buildCountdown() {
+    return Container(
+        height: 100,
+        width: 100,
+        color: Colors.red,
+        child: TextButton(
+          onPressed: () => {
+            if (_timerController.isAnimating)
+              {_timerController.stop()}
+            else
+              {_timerController.start()}
+          },
+          onLongPress: ()=>{
+            _timerController.reset()
+          },
+          child: SimpleTimer(
+            controller: _timerController,
+            progressTextStyle: TextStyle(fontSize: 18, color: Colors.black),
+            displayProgressIndicator: false,
+            duration: Duration(minutes: 1, seconds: 30),
+            progressTextCountDirection:
+                TimerProgressTextCountDirection.count_down,
+            onEnd: () => {_timerController.reset()},
+          ),
+        ));
   }
 
   TextButton _buildTimeController(BuildContext context) {
@@ -150,24 +170,24 @@ class _onFitness extends State<onFitness> {
           "." +
           DateTime.now().year.toString()),
       actions: [
-        IconButton(onPressed: ()=>{
-          _showFinishDialog(),
-        }, icon: Icon(Icons.check))
+        IconButton(
+            onPressed: () => {
+                  _showFinishDialog(),
+                },
+            icon: Icon(Icons.check))
       ],
     );
   }
 
   Future<String?> _showFinishDialog() {
     return showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
               actionsAlignment: MainAxisAlignment.center,
-              title:
-              const Text('Bist du fertig mit dem Training?'),
+              title: const Text('Bist du fertig mit dem Training?'),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () =>
-                  {Navigator.pop(context), tot(training)},
+                  onPressed: () => {Navigator.pop(context), tot(training)},
                   child: const Text('JAAAA'),
                 ),
                 TextButton(
@@ -359,9 +379,9 @@ class CardItem implements ListItem {
 }
 
 class TimerField extends StatefulWidget {
-  TimerField(this.stopwatchi, this.returnHours);
+  TimerField(this.watch, this.returnHours);
 
-  final Stopwatch stopwatchi;
+  final Stopwatch watch;
   final bool returnHours;
 
   TimerFieldState createState() => TimerFieldState();
@@ -388,14 +408,15 @@ class TimerFieldState extends State<TimerField> {
   Widget build(BuildContext context) {
     if (widget.returnHours) {
       return Text(
-        onFitness.formatTime(widget.stopwatchi.elapsedMilliseconds, true),
+        OnFitness.formatTime(widget.watch.elapsedMilliseconds, true),
         style: TextStyle(
             fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),
       );
     } else {
       return Text(
-        onFitness.formatTime(widget.stopwatchi.elapsedMilliseconds, false),
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        OnFitness.formatTime(widget.watch.elapsedMilliseconds, false),
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
       );
     }
   }
