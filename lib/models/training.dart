@@ -9,11 +9,11 @@ part 'training.g.dart';
 @JsonSerializable()
 
 class Training{
-  BigInt dauer;
-  BigInt datum;
-  List<UebungsErgebnisse> uebungErgebnisse;
+  int dauer;
+  dateCode date;
+  List<UebungsErgebniss> uebungErgebnisse;
 
-  Training(this.dauer,this.datum,this.uebungErgebnisse);
+  Training(this.dauer,this.date,this.uebungErgebnisse);
   factory Training.fromJson(Map<String, dynamic> json) => _$TrainingFromJson(json);
 
   Map<String, dynamic> toJson() => _$TrainingToJson(this);

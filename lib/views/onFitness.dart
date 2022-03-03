@@ -34,6 +34,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   late Training training;
   Color ButtonColor = Colors.orange;
   late TimerController _timerController;
+  int DateCode = DateTime.now().day + DateTime.now().month + DateTime.now().year;
 
   @override
   void initState() {
@@ -44,7 +45,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
         .getUebungs()
         .map((u) => new CardItem(widget.appData, u.name))
         .toList();
-    training = new Training(BigInt.zero, BigInt.zero, []);
+    training = new Training(0,new dateCode(2, 10, 9, 2004),[]);
     super.initState();
   }
 
@@ -208,6 +209,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   }
 
   void tot(Training training) {
+    training.dauer = _stopwatch.elapsedMilliseconds;
     widget.appData.trainings.add(training);
     Navigator.pop(context);
   }
@@ -216,8 +218,8 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
     setState(() {
       uebungenLeft.remove(c);
     });
-    UebungsErgebnisse uebungsErgebniss =
-        new UebungsErgebnisse(c.name, c.lastValueCont.text, BigInt.zero);
+    UebungsErgebniss uebungsErgebniss =
+        new UebungsErgebniss(c.name, [], 0);
     training.uebungErgebnisse.add(uebungsErgebniss);
     if (uebungenLeft.isEmpty) {
       _showFinishDialog();
@@ -264,9 +266,7 @@ class CardItem implements ListItem {
 
   initValues() {
     if (appData.trainings.isNotEmpty) {
-      lastValueCont.text = appData.trainings.last.uebungErgebnisse
-          .firstWhere((element) => element.name == name)
-          .wert;
+     //ToDO
     }
     notizenCont.text =
         appData.uebungs.firstWhere((element) => element.name == name).notizen;

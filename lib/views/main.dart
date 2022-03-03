@@ -68,25 +68,25 @@ class _MyHomePageState extends State<MyHomePage> {
         'exercises/flachbankdruecken_Maschine.png',
         "#ac4bb4",
         "",
-        ""));
+        "",4));
     tmp.add(Uebung("Butterfly", widget.butterflyBeschreibung,
-        'exercises/butterfly-maschine.jpg', "#ac4bb4", "", ""));
+        'exercises/butterfly-maschine.jpg', "#ac4bb4", "", "",4));
     tmp.add(Uebung("Latzug zur Brust", widget.latzugzurBrustB,
-        'exercises/latzugzurBrust.png', "#c5118d", "", ""));
+        'exercises/latzugzurBrust.png', "#c5118d", "", "",4));
     tmp.add(Uebung("Rudern am Kabel", widget.rudernamKabelB,
-        'exercises/rudern-am-kabelzug.gif', "#c5118d", "", ""));
+        'exercises/rudern-am-kabelzug.gif', "#c5118d", "", "",4));
     tmp.add(Uebung("Seitenheben Kurzhanteln", widget.seithebenKurzhantelnB,
-        'exercises/seitheben_mit_kurzhanteln.jpg', "#d32c60", "", ""));
+        'exercises/seitheben_mit_kurzhanteln.jpg', "#d32c60", "", "",4));
     tmp.add(Uebung("Beinpresse", widget.beinpresseB, 'exercises/beinpresse.gif',
-        "#ffc41d", "", ""));
+        "#ffc41d", "", "",4));
     tmp.add(Uebung("Beincurls", widget.beincurlsB, 'exercises/beincurls.gif',
-        "#ffc41d", "", ""));
+        "#ffc41d", "", "",4));
     tmp.add(Uebung("Scottcurls am Gerät", widget.szCurlsB,
-        'exercises/scottcurls_maschine.jpg', "#a7eb7b", "", ""));
+        'exercises/scottcurls_maschine.jpg', "#a7eb7b", "", "",4));
     tmp.add(Uebung("Trizepsdrücken am Kabel", widget.trizepsdrueckenamKabelB,
-        'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", ""));
+        'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", "",4));
     tmp.add(Uebung("Bauchmaschine", widget.crunchB, 'exercises/crunsh.jpeg',
-        "#00718f", "", ""));
+        "#00718f", "", "",4));
     appData.uebungs = tmp;
   }
 

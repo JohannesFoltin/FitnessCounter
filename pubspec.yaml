@@ -23,8 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: "2.0.11"
-  json_annotation: any
+  shared_preferences: "2.0.13"
+  json_annotation: 4.4.0
   google_fonts: ^2.2.0
   styled_widget: ^0.4.0+3
   flutter_slidable: any
@@ -35,7 +35,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  json_serializable: any
+  json_serializable: ^6.0.0
   build_runner: any
 
 # For information on the generic Dart part of this file, see the

@@ -9,6 +9,12 @@ part 'appData.g.dart';
 // Falls Probleme: run command: flutter pub run build_runner build
 // Wenn nicht dann: flutter pub run build_runner watch
 
+/*
+Wenn neue Klasse:
+factory AppData.fromJson(Map<String, dynamic> json) => _$AppDataFromJson(json);
+Map<String, dynamic> toJson() => _$AppDataToJson(this);
+ */
+
 @JsonSerializable()
 class AppData{
 

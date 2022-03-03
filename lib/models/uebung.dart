@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:fitness_f/models/datalayer.dart';
 
 /// This allows the `User` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
@@ -12,6 +12,7 @@ class Uebung {
   String beschreibung;
   String pictureAsset;
   String notizen;
+  int reps;
   String einheit;
   String color;
 
@@ -22,6 +23,7 @@ class Uebung {
     this.color,
     this.notizen,
     this.einheit,
+    this.reps
   );
   setNotizen(String notiz){
     this.notizen = notiz;

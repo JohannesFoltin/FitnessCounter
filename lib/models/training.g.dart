@@ -7,15 +7,15 @@ part of 'training.dart';
 // **************************************************************************
 
 Training _$TrainingFromJson(Map<String, dynamic> json) => Training(
-      BigInt.parse(json['dauer'] as String),
-      BigInt.parse(json['datum'] as String),
+      json['dauer'] as int,
+      dateCode.fromJson(json['date'] as Map<String, dynamic>),
       (json['uebungErgebnisse'] as List<dynamic>)
-          .map((e) => UebungsErgebnisse.fromJson(e as Map<String, dynamic>))
+          .map((e) => UebungsErgebniss.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$TrainingToJson(Training instance) => <String, dynamic>{
-      'dauer': instance.dauer.toString(),
-      'datum': instance.datum.toString(),
+      'dauer': instance.dauer,
+      'date': instance.date,
       'uebungErgebnisse': instance.uebungErgebnisse,
     };
