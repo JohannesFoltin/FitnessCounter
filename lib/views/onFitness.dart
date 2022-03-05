@@ -30,22 +30,23 @@ class OnFitness extends StatefulWidget {
 class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   bool run = true;
   Stopwatch _stopwatch = new Stopwatch();
-  late List<CardItem> uebungenLeft;
+  late List<UebungItem> uebungenLeft;
   late Training training;
   Color ButtonColor = Colors.orange;
   late TimerController _timerController;
-  int DateCode = DateTime.now().day + DateTime.now().month + DateTime.now().year;
+  late dateCode DateCode;
 
   @override
   void initState() {
     // TODO: implement initState
     _timerController = TimerController(this);
     _stopwatch.start();
+    DateCode = new dateCode(DateTime.now().hour, DateTime.now().day, DateTime.now().month, DateTime.now().year);
     uebungenLeft = widget.appData
         .getUebungs()
-        .map((u) => new CardItem(widget.appData, u.name))
+        .map((u) => new UebungItem(widget.appData, u.name))
         .toList();
-    training = new Training(0,new dateCode(2, 10, 9, 2004),[]);
+    training = new Training(0, DateCode,[]);
     super.initState();
   }
 
@@ -214,12 +215,17 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
     Navigator.pop(context);
   }
 
-  void removeItem(CardItem c) {
-    setState(() {
+  void removeItem(UebungItem c) {
+    //ACHTUNG SEHR HÄSSLICH
+    //TODO
+    if (c.remainingwiederholung==0) {
       uebungenLeft.remove(c);
+    }
+    setState(() {
+
     });
     UebungsErgebniss uebungsErgebniss =
-        new UebungsErgebniss(c.name, [], 0);
+        new UebungsErgebniss(c.name, c.reps, 0);
     training.uebungErgebnisse.add(uebungsErgebniss);
     if (uebungenLeft.isEmpty) {
       _showFinishDialog();
@@ -240,19 +246,195 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
 abstract class ListItem {
   Widget buildCard(BuildContext context, Function r);
 }
+class UebungItem implements ListItem{
+  late final AppData appData;
+  late final String name;
+  late Uebung uebung;
+  late  int remainingwiederholung;
+  late List<wiederholung> reps;
 
+  TextEditingController lastValueCont = new TextEditingController();
+  TextEditingController notizenCont = new TextEditingController();
+
+  UebungItem(AppData appData, String name,) {
+    this.uebung = appData.getUebungByName(name);
+    this.appData = appData;
+    this.name = name;
+    initValues();
+  }
+
+  initValues() {
+    reps = [];
+    remainingwiederholung = appData.uebungs.firstWhere((element) => element.name == name).reps;
+    notizenCont.text =
+        appData.uebungs.firstWhere((element) => element.name == name).notizen;
+  }
+
+  @override
+  Widget buildCard(BuildContext context, Function r) {
+    lastValueCont.selection = TextSelection.fromPosition(
+        TextPosition(offset: lastValueCont.text.length));
+
+    notizenCont.selection = TextSelection.fromPosition(
+        TextPosition(offset: notizenCont.text.length));
+    return Container(
+      margin: const EdgeInsets.fromLTRB(10.0,2.5,10.0,2.5),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10.0),
+        child: Container(
+          color: HexColor.fromHex(uebung.color),
+          height: 50,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Flexible( child:
+                Text(" x" + remainingwiederholung.toString())
+                 ,),
+              Expanded(
+                flex: 4,
+                child: TextButton(
+                  onPressed: () => {print("tse"),_showInfoScreen(context)},
+                  style: TextButton.styleFrom(
+                    alignment: Alignment.centerLeft,
+                    primary: Colors.black,
+                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  child: Text(
+                    uebung.name,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                ),
+              ),
+              Expanded(
+                  child: SizedBox(
+                    height: 25,
+                    child: TextField(
+                      controller: lastValueCont,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        fillColor: Colors.white,
+
+                        filled: true,
+                    ),
+                    ),
+                  )),
+              Flexible(
+                  child: ElevatedButton(
+                    onPressed: () => {
+                      if(remainingwiederholung > 0){
+                        remainingwiederholung--,
+                        reps.add(new wiederholung(int.parse(lastValueCont.text))),
+                        lastValueCont.clear(),
+                        r(this)
+                      }
+                      else{
+                        r(this)
+                      },
+                    },
+                    child: Icon(Icons.check),
+                  )),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Future<String?> _showInfoScreen(BuildContext context) {
+    return showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          scrollable: true, // <-- Set it to true
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(onPressed: ()=>{Navigator.pop(context)}, child:Text("Fertig"))
+          ],
+          content: Column(
+            children: [
+              Divider(
+                  color: Colors.black
+              ),
+              _buildBild(),
+              Divider(
+                  color: Colors.black
+              ),
+              _buildBeschreibung(),
+              Divider(
+                  color: Colors.black
+              ),
+              notizenContainer(context),
+              Divider(
+                  color: Colors.black
+              ),
+            ],
+          ),
+        ));
+  }
+
+  Container _buildBild() {
+    return Container(child: Column(
+      children: [
+        Text("Bild"),
+        Image(image: AssetImage(uebung.pictureAsset)),
+      ],
+    ));
+  }
+
+  Container _buildBeschreibung() {
+    return Container(
+      child: Column(
+        children: [
+          Text("Beschreibung"),
+          Text(
+            uebung.beschreibung,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container notizenContainer(BuildContext context){
+    return Container(
+      child: Column(
+        children: [
+          Text("Notizen"),
+          TextField(
+            controller: notizenCont,
+            minLines: 5,
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
+            decoration: new InputDecoration(
+              enabledBorder: const OutlineInputBorder(),
+            ),
+          ),
+          Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => {
+                    appData.uebungs
+                        .firstWhere((element) => element.name == name)
+                        .setNotizen(notizenCont.text),
+                    FocusScope.of(context).unfocus()
+                  },
+                  child: Text("Speichern"),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+/*
 class CardItem implements ListItem {
   late final AppData appData;
   late final String name;
   late Uebung uebung;
-  Stopwatch _stopwatch = new Stopwatch();
-
-  void _handleTimer() {
-    if (_stopwatch.isRunning)
-      _stopwatch.stop();
-    else
-      _stopwatch.start();
-  }
 
   TextEditingController lastValueCont = new TextEditingController();
   TextEditingController notizenCont = new TextEditingController();
@@ -377,6 +559,7 @@ class CardItem implements ListItem {
     );
   }
 }
+*/
 
 class TimerField extends StatefulWidget {
   TimerField(this.watch, this.returnHours);

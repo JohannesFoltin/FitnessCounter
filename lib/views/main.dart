@@ -60,7 +60,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   AppData appData = new AppData([], []);
 
-  void initUebungen() {
+  List<Uebung> initUebungen() {
     List<Uebung> tmp = [];
     tmp.add(Uebung(
         "Flachbankdrücken Maschine",
@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", "",4));
     tmp.add(Uebung("Bauchmaschine", widget.crunchB, 'exercises/crunsh.jpeg',
         "#00718f", "", "",4));
-    appData.uebungs = tmp;
+  return tmp;
   }
 
   saveAppData(AppData appData) async {
@@ -101,10 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
     appData = AppData.fromJson(jsonDecode(
         prefs.getString("BuBu") ?? "{\"uebungs\":[], \"trainings\":[]}"));
     print("loaded");
-    if (appData.uebungs.isEmpty) {
-       initUebungen();
-       print("Übungen init");
-     }
   }
 
   @override
@@ -133,10 +129,12 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             child: Text("Start Training"),
           ),
+          TextButton(onPressed: ()=> {appData.uebungs = initUebungen(),saveAppData(appData),print("Uebungen Init")}, child: Text("Load Uebungs")),
           TextButton(onPressed: () => {
             ichhassemeinLeben()
           }, child: Text("Reset Übungnen")),
-          TextButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => testScreen()));}, child: Text("Go to Test Screen"))
+          TextButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => testScreen()));}, child: Text("Go to Test Screen")),
+          Text("Letztes Traing: " + appData.trainings.last.uebungErgebnisse.first.name + " " + appData.trainings.last.uebungErgebnisse.first.repetitions.first.wert.toString())
         ],
       )),
     );
@@ -144,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ichhassemeinLeben(){
     print("reset");
     appData.uebungs = [];
+    appData.trainings = [];
     saveAppData(appData);
   }
 }
