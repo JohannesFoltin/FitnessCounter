@@ -10,7 +10,7 @@ part 'training.g.dart';
 
 class Training{
   int dauer;
-  dateCode date;
+  DateTime date;
   List<UebungsErgebniss> uebungErgebnisse;
 
   Training(this.dauer,this.date,this.uebungErgebnisse);

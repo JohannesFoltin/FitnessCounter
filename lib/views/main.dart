@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:fitness_f/views/onFitness.dart';
 import 'package:fitness_f/views/testScreen.dart';
+import 'package:fitness_f/views/trainingResult.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 void main() {
   runApp(MyApp());
@@ -22,15 +22,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Fitness3000'),
+      routes: {'home': (context) => MyHomePage()},
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  MyHomePage({Key? key}) : super(key: key);
 
-  final String title;
   String flachbankdruecken_Maschine_Beschreibung =
       "Wir greifen den horizontalen Griff so weit außen wie möglich, damit wir so stark wie nur möglich die Brust trainieren. Je enger wir greifen, desto verstärkt belasten wir den Trizeps, wie bei der Übung enges Bankdrücken. Stelle den Sitz für das Training so ein, dass die Griffe auf der Höhe deiner Brust sind. Aus der Kraft der Brustmuskeln drückst du das Gewicht ohne jeglichen Schwung nach vorne. Strecke jedoch deine Arme vorne nicht ganz durch, damit du die Spannung in den Muskeln nicht verlierst. Bleibe während der gesamten Ausführung mit deinem Oberkörper eng an der Rückenlehne und lasse ebenso deine Schultern hinten.";
   String butterflyBeschreibung =
@@ -68,26 +68,27 @@ class _MyHomePageState extends State<MyHomePage> {
         'exercises/flachbankdruecken_Maschine.png',
         "#ac4bb4",
         "",
-        "",4));
+        "",
+        4));
     tmp.add(Uebung("Butterfly", widget.butterflyBeschreibung,
-        'exercises/butterfly-maschine.jpg', "#ac4bb4", "", "",4));
+        'exercises/butterfly-maschine.jpg', "#ac4bb4", "", "", 4));
     tmp.add(Uebung("Latzug zur Brust", widget.latzugzurBrustB,
-        'exercises/latzugzurBrust.png', "#c5118d", "", "",4));
+        'exercises/latzugzurBrust.png', "#c5118d", "", "", 4));
     tmp.add(Uebung("Rudern am Kabel", widget.rudernamKabelB,
-        'exercises/rudern-am-kabelzug.gif', "#c5118d", "", "",4));
+        'exercises/rudern-am-kabelzug.gif', "#c5118d", "", "", 4));
     tmp.add(Uebung("Seitenheben Kurzhanteln", widget.seithebenKurzhantelnB,
-        'exercises/seitheben_mit_kurzhanteln.jpg', "#d32c60", "", "",4));
+        'exercises/seitheben_mit_kurzhanteln.jpg', "#d32c60", "", "", 4));
     tmp.add(Uebung("Beinpresse", widget.beinpresseB, 'exercises/beinpresse.gif',
-        "#ffc41d", "", "",4));
+        "#ffc41d", "", "", 4));
     tmp.add(Uebung("Beincurls", widget.beincurlsB, 'exercises/beincurls.gif',
-        "#ffc41d", "", "",4));
+        "#ffc41d", "", "", 4));
     tmp.add(Uebung("Scottcurls am Gerät", widget.szCurlsB,
-        'exercises/scottcurls_maschine.jpg', "#a7eb7b", "", "",4));
+        'exercises/scottcurls_maschine.jpg', "#a7eb7b", "", "", 4));
     tmp.add(Uebung("Trizepsdrücken am Kabel", widget.trizepsdrueckenamKabelB,
-        'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", "",4));
+        'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", "", 4));
     tmp.add(Uebung("Bauchmaschine", widget.crunchB, 'exercises/crunsh.jpeg',
-        "#00718f", "", "",4));
-  return tmp;
+        "#00718f", "", "", 4));
+    return tmp;
   }
 
   saveAppData(AppData appData) async {
@@ -96,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print("AppData Saved");
   }
 
-   loadAppData() async {
+  loadAppData() async {
     final prefs = await SharedPreferences.getInstance();
     appData = AppData.fromJson(jsonDecode(
         prefs.getString("BuBu") ?? "{\"uebungs\":[], \"trainings\":[]}"));
@@ -107,41 +108,61 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title,style: GoogleFonts.notoSans(),).textColor(Colors.black).fontSize(25),
+        title: Text("Fitness 3000" /*,style: GoogleFonts.notoSans(),*/)
+            .textColor(Colors.black)
+            .fontSize(25),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
       body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextButton(
             onPressed: () {
               loadAppData();
-               Navigator.push(
+              Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => OnFitness(appData: appData)))
                   .then((_) {
                 saveAppData(appData);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TrainingResult(
+                            appData: appData,
+                            training: appData.trainings.last)));
               });
             },
             child: Text("Start Training"),
           ),
-          TextButton(onPressed: ()=> {appData.uebungs = initUebungen(),saveAppData(appData),print("Uebungen Init")}, child: Text("Load Uebungs")),
-          TextButton(onPressed: () => {
-            ichhassemeinLeben()
-          }, child: Text("Reset Übungnen")),
-          TextButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => testScreen()));}, child: Text("Go to Test Screen")),
-          Text("Letztes Traing: " + appData.trainings.last.uebungErgebnisse.first.name + " " + appData.trainings.last.uebungErgebnisse.first.repetitions.first.wert.toString())
+          TextButton(
+              onPressed: () => {
+                    appData.uebungs = initUebungen(),
+                    saveAppData(appData),
+                    print("Uebungen Init")
+                  },
+              child: Text("Load Uebungs")),
+          TextButton(
+              onPressed: () => {ichhassemeinLeben()},
+              child: Text("Reset Übungnen")),
+          TextButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => testScreen()));
+              },
+              child: Text("Go to Test Screen")),
+          //Text("Letztes Traing: " + appData.trainings.last.uebungErgebnisse.first.name + " " + appData.trainings.last.uebungErgebnisse.first.repetitions.first.wert.toString())
         ],
       )),
     );
   }
-  ichhassemeinLeben(){
+
+  ichhassemeinLeben() {
     print("reset");
-    appData.uebungs = [];
+    // appData.uebungs = [];
     appData.trainings = [];
     saveAppData(appData);
   }

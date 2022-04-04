@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:fitness_f/views/main.dart';
+import 'package:fitness_f/views/trainingResult.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:simple_timer/simple_timer.dart';
@@ -34,62 +35,65 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   late Training training;
   Color ButtonColor = Colors.orange;
   late TimerController _timerController;
-  late dateCode DateCode;
+  late final DateTime DateCode;
 
   @override
   void initState() {
     // TODO: implement initState
     _timerController = TimerController(this);
     _stopwatch.start();
-    DateCode = new dateCode(DateTime.now().hour, DateTime.now().day, DateTime.now().month, DateTime.now().year);
+    DateCode = DateTime.now();
     uebungenLeft = widget.appData
         .getUebungs()
         .map((u) => new UebungItem(widget.appData, u.name))
         .toList();
-    training = new Training(0, DateCode,[]);
+    training = new Training(0, DateCode, []);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Column(
-                    children: [
-                      Text("Zeit in der Übung"),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Container(
-                            height: 150,
-                            width: 150,
-                            color: ButtonColor,
-                            child: _buildTimeController(context)),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Pause Timer"),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: _buildCountdown(),
-                      ),
-                    ],
-                  )
-                ],
+    return new WillPopScope(
+      onWillPop: ()async => false,
+      child: Scaffold(
+        appBar: _buildAppBar(),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Column(
+                      children: [
+                        Text("Zeit in der Übung"),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Container(
+                              height: 150,
+                              width: 150,
+                              color: ButtonColor,
+                              child: _buildTimeController(context)),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text("Pause Timer"),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: _buildCountdown(),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-            Expanded(child: _buildUebungenList()),
-          ],
+              Expanded(child: _buildUebungenList()),
+            ],
+          ),
         ),
       ),
     );
@@ -107,9 +111,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
             else
               {_timerController.start()}
           },
-          onLongPress: ()=>{
-            _timerController.reset()
-          },
+          onLongPress: () => {_timerController.reset()},
           child: SimpleTimer(
             controller: _timerController,
             progressTextStyle: TextStyle(fontSize: 18, color: Colors.black),
@@ -212,21 +214,24 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   void tot(Training training) {
     training.dauer = _stopwatch.elapsedMilliseconds;
     widget.appData.trainings.add(training);
+    // Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //         builder: (context) =>
+    //             TrainingResult(appData: widget.appData, training: training,)));
+    //Navigator.pop(context);
     Navigator.pop(context);
   }
 
   void removeItem(UebungItem c) {
     //ACHTUNG SEHR HÄSSLICH
-    //TODO
-    if (c.remainingwiederholung==0) {
+    //TODOint
+    if (c.remainingwiederholung == 0) {
       uebungenLeft.remove(c);
+      UebungsErgebniss uebungsErgebniss = new UebungsErgebniss(c.name, c.reps, 0);
+      training.uebungErgebnisse.add(uebungsErgebniss);
     }
-    setState(() {
-
-    });
-    UebungsErgebniss uebungsErgebniss =
-        new UebungsErgebniss(c.name, c.reps, 0);
-    training.uebungErgebnisse.add(uebungsErgebniss);
+    setState(() {});
     if (uebungenLeft.isEmpty) {
       _showFinishDialog();
     }
@@ -246,17 +251,21 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
 abstract class ListItem {
   Widget buildCard(BuildContext context, Function r);
 }
-class UebungItem implements ListItem{
+
+class UebungItem implements ListItem {
   late final AppData appData;
   late final String name;
   late Uebung uebung;
-  late  int remainingwiederholung;
+  late int remainingwiederholung;
   late List<wiederholung> reps;
 
   TextEditingController lastValueCont = new TextEditingController();
   TextEditingController notizenCont = new TextEditingController();
 
-  UebungItem(AppData appData, String name,) {
+  UebungItem(
+    AppData appData,
+    String name,
+  ) {
     this.uebung = appData.getUebungByName(name);
     this.appData = appData;
     this.name = name;
@@ -265,7 +274,8 @@ class UebungItem implements ListItem{
 
   initValues() {
     reps = [];
-    remainingwiederholung = appData.uebungs.firstWhere((element) => element.name == name).reps;
+    remainingwiederholung =
+        appData.uebungs.firstWhere((element) => element.name == name).reps;
     notizenCont.text =
         appData.uebungs.firstWhere((element) => element.name == name).notizen;
   }
@@ -278,7 +288,7 @@ class UebungItem implements ListItem{
     notizenCont.selection = TextSelection.fromPosition(
         TextPosition(offset: notizenCont.text.length));
     return Container(
-      margin: const EdgeInsets.fromLTRB(10.0,2.5,10.0,2.5),
+      margin: const EdgeInsets.fromLTRB(10.0, 2.5, 10.0, 2.5),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10.0),
         child: Container(
@@ -287,93 +297,105 @@ class UebungItem implements ListItem{
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Flexible( child:
-                Text(" x" + remainingwiederholung.toString())
-                 ,),
+              Flexible(
+                child: Text(" x" + remainingwiederholung.toString()),
+              ),
               Expanded(
                 flex: 4,
                 child: TextButton(
-                  onPressed: () => {print("tse"),_showInfoScreen(context)},
+                  onPressed: () => {print("tse"), _showInfoScreen(context)},
                   style: TextButton.styleFrom(
                     alignment: Alignment.centerLeft,
                     primary: Colors.black,
-                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    textStyle:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   child: Text(
                     uebung.name,
                     overflow: TextOverflow.ellipsis,
                   ),
-
                 ),
               ),
               Expanded(
                   child: SizedBox(
-                    height: 25,
-                    child: TextField(
-                      controller: lastValueCont,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        fillColor: Colors.white,
-
-                        filled: true,
-                    ),
-                    ),
-                  )),
+                height: 25,
+                child: TextField(
+                  controller: lastValueCont,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    fillColor: Colors.white,
+                    filled: true,
+                  ),
+                ),
+              )),
               Flexible(
                   child: ElevatedButton(
-                    onPressed: () => {
-                      if(remainingwiederholung > 0){
-                        remainingwiederholung--,
-                        reps.add(new wiederholung(int.parse(lastValueCont.text))),
-                        lastValueCont.clear(),
-                        r(this)
-                      }
-                      else{
-                        r(this)
-                      },
-                    },
-                    child: Icon(Icons.check),
-                  )),
+                onPressed: () => {
+                  if(lastValueCont.text == ""){
+                    print("Error. No lastValueCont text")
+                  }
+                  else if (remainingwiederholung > 0)
+                    {
+                      remainingwiederholung--,
+                      reps.add(new wiederholung(int.parse(lastValueCont.text))),
+                      lastValueCont.clear(),
+                      r(this)
+                    }
+                  else
+                    {r(this)},
+                },
+                onLongPress: () => {
+                  if(lastValueCont.text == ""){
+                    print("Error. No lastValueCont text")
+                  }
+                  else
+                    {
+                      for (int i = 0; i < remainingwiederholung; i++)
+                        {
+                          reps.add(new wiederholung(int.parse(lastValueCont.text))),
+                        },
+                      remainingwiederholung = 0,
+                      r(this),
+                    }
+                },
+                child: Icon(Icons.check),
+              )),
             ],
           ),
         ),
       ),
     );
   }
+
   Future<String?> _showInfoScreen(BuildContext context) {
     return showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          scrollable: true, // <-- Set it to true
-          actionsAlignment: MainAxisAlignment.center,
-          actions: [
-            TextButton(onPressed: ()=>{Navigator.pop(context)}, child:Text("Fertig"))
-          ],
-          content: Column(
-            children: [
-              Divider(
-                  color: Colors.black
+              scrollable: true, // <-- Set it to true
+              actionsAlignment: MainAxisAlignment.center,
+              actions: [
+                TextButton(
+                    onPressed: () => {Navigator.pop(context)},
+                    child: Text("Fertig"))
+              ],
+              content: Column(
+                children: [
+                  Divider(color: Colors.black),
+                  _buildBild(),
+                  Divider(color: Colors.black),
+                  _buildBeschreibung(),
+                  Divider(color: Colors.black),
+                  notizenContainer(context),
+                  Divider(color: Colors.black),
+                ],
               ),
-              _buildBild(),
-              Divider(
-                  color: Colors.black
-              ),
-              _buildBeschreibung(),
-              Divider(
-                  color: Colors.black
-              ),
-              notizenContainer(context),
-              Divider(
-                  color: Colors.black
-              ),
-            ],
-          ),
-        ));
+            ));
   }
 
   Container _buildBild() {
-    return Container(child: Column(
+    return Container(
+        child: Column(
       children: [
         Text("Bild"),
         Image(image: AssetImage(uebung.pictureAsset)),
@@ -395,7 +417,7 @@ class UebungItem implements ListItem{
     );
   }
 
-  Container notizenContainer(BuildContext context){
+  Container notizenContainer(BuildContext context) {
     return Container(
       child: Column(
         children: [
