@@ -22,6 +22,7 @@ class AppData{
   List<Training> trainings;
 
   AppData(this.uebungs,this.trainings);
+
   Uebung getUebungByName(String name){
     return uebungs.firstWhere((element) => element.name == name);
   }

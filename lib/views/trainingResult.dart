@@ -1,13 +1,11 @@
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'main.dart';
 
 class TrainingResult extends StatefulWidget {
-  TrainingResult({Key? key, required this.appData, required this.training})
+  TrainingResult({Key? key, required this.training})
       : super(key: key);
 
-  final AppData appData;
   final Training training;
 
   static String formatTime(int milliseconds, bool returnHours) {
@@ -100,7 +98,6 @@ class _TrainingResult extends State<TrainingResult> {
   }
 
   AppBar _buildAppBar() {
-    int count;
     return AppBar(
       backgroundColor: HexColor.fromHex("#006666"),
       automaticallyImplyLeading: false,
@@ -118,7 +115,7 @@ class _TrainingResult extends State<TrainingResult> {
       actions: [
         IconButton(
             onPressed: () => {
-                 Navigator.pushNamed(context, 'home')
+                 Navigator.pop(context)
                 },
             icon: Icon(Icons.check))
       ],

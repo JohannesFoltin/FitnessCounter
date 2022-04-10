@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:fitness_f/models/datalayer.dart';
+import 'package:fitness_f/views/appData_provider.dart';
 import 'package:fitness_f/views/main.dart';
 import 'package:fitness_f/views/trainingResult.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:simple_timer/simple_timer.dart';
 
 class OnFitness extends StatefulWidget {
-  OnFitness({Key? key, required this.appData}) : super(key: key);
-
-  final AppData appData;
+  OnFitness({Key? key}) : super(key: key);
 
   @override
   _OnFitness createState() => _OnFitness();
@@ -30,6 +28,7 @@ class OnFitness extends StatefulWidget {
 
 class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   bool run = true;
+  bool uebungsAlreadyInit = false;
   Stopwatch _stopwatch = new Stopwatch();
   late List<UebungItem> uebungenLeft;
   late Training training;
@@ -43,10 +42,6 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
     _timerController = TimerController(this);
     _stopwatch.start();
     DateCode = DateTime.now();
-    uebungenLeft = widget.appData
-        .getUebungs()
-        .map((u) => new UebungItem(widget.appData, u.name))
-        .toList();
     training = new Training(0, DateCode, []);
     super.initState();
   }
@@ -54,7 +49,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
-      onWillPop: ()async => false,
+      onWillPop: () async => false,
       child: Scaffold(
         appBar: _buildAppBar(),
         body: SafeArea(
@@ -203,6 +198,13 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   }
 
   ListView _buildUebungenList() {
+    if (!uebungsAlreadyInit) {
+      AppData tmp = AppDataProvider.of(context).appData;
+      uebungenLeft =
+          tmp.uebungs.map((u) => new UebungItem(tmp, u.name)).toList();
+      print("Ich habe gelistet");
+      uebungsAlreadyInit = true;
+    }
     return ListView.builder(
         itemCount: uebungenLeft.length,
         itemBuilder: (context, index) {
@@ -213,13 +215,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
 
   void tot(Training training) {
     training.dauer = _stopwatch.elapsedMilliseconds;
-    widget.appData.trainings.add(training);
-    // Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) =>
-    //             TrainingResult(appData: widget.appData, training: training,)));
-    //Navigator.pop(context);
+    AppDataProvider.of(context).addTraining(training);
     Navigator.pop(context);
   }
 
@@ -228,7 +224,8 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
     //TODOint
     if (c.remainingwiederholung == 0) {
       uebungenLeft.remove(c);
-      UebungsErgebniss uebungsErgebniss = new UebungsErgebniss(c.name, c.reps, 0);
+      UebungsErgebniss uebungsErgebniss =
+          new UebungsErgebniss(c.name, c.reps, 0);
       training.uebungErgebnisse.add(uebungsErgebniss);
     }
     setState(() {});
@@ -332,9 +329,8 @@ class UebungItem implements ListItem {
               Flexible(
                   child: ElevatedButton(
                 onPressed: () => {
-                  if(lastValueCont.text == ""){
-                    print("Error. No lastValueCont text")
-                  }
+                  if (lastValueCont.text == "")
+                    {print("Error. No lastValueCont text")}
                   else if (remainingwiederholung > 0)
                     {
                       remainingwiederholung--,
@@ -346,14 +342,14 @@ class UebungItem implements ListItem {
                     {r(this)},
                 },
                 onLongPress: () => {
-                  if(lastValueCont.text == ""){
-                    print("Error. No lastValueCont text")
-                  }
+                  if (lastValueCont.text == "")
+                    {print("Error. No lastValueCont text")}
                   else
                     {
                       for (int i = 0; i < remainingwiederholung; i++)
                         {
-                          reps.add(new wiederholung(int.parse(lastValueCont.text))),
+                          reps.add(
+                              new wiederholung(int.parse(lastValueCont.text))),
                         },
                       remainingwiederholung = 0,
                       r(this),
