@@ -6,6 +6,7 @@ import 'package:fitness_f/views/onFitness.dart';
 import 'package:fitness_f/views/testScreen.dart';
 import 'package:fitness_f/views/trainingResult.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -23,8 +24,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        routes: {'home': (context) => MyHomePage(),
-        'onFitness':(context) => OnFitness()},
+        routes: {
+          'home': (context) => MyHomePage(),
+          'onFitness': (context) => OnFitness()
+        },
         home: MyHomePage(),
       ),
     );
@@ -34,15 +37,175 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
 
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool isLoaded = false;
+
+  //Wichitg! Future<void> ist wichtig für .then()
+
+  Future<void> loadAppData() async {
+    final prefs = await SharedPreferences.getInstance();
+    AppDataProvider.of(context).appData = AppData.fromJson(jsonDecode(prefs
+            .getString("1, 2, 3, 5, 8, 13, 21, 34") ??
+        "{\"uebungs\":" + jsonEncode(initUebungen()) + ", \"trainings\":[]}"));
+    print("loaded");
+  }
+
+  Future<void> saveAppData() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("1, 2, 3, 5, 8, 13, 21, 34",
+        jsonEncode(AppDataProvider.of(context).appData));
+    print("AppData Saved");
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    loadAppData().then((value) => {isLoaded = true, setState(() {})});
+    super.initState();
+    print("test");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget? myWidget;
+    if (isLoaded == false) {
+      myWidget = CircularProgressIndicator();
+    } else {
+      myWidget = buildEverything(context);
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Fitness 3000", style: GoogleFonts.notoSans())
+            .textColor(Colors.black)
+            .fontSize(25),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
+      body: myWidget,
+    );
+  }
+
+  Center buildEverything(BuildContext context) {
+    return Center(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: const EdgeInsets.fromLTRB(10.0, 10, 10.0, 10),
+          height: 100,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.black,
+                width: 4,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(20))),
+          child: Text(
+            "Absolvierte Trainings diesen Monat: " +
+                AppDataProvider.of(context)
+                    .getTrainingsThisMonth(DateTime.now())
+                    .toString(),
+          ).fontSize(18).center(),
+        ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
+          height: 100,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, 'onFitness').then((_) {
+                        saveAppData();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TrainingResult(
+                                    training: AppDataProvider.of(context)
+                                        .appData
+                                        .trainings
+                                        .last)));
+                      });
+                    },
+                    child: Text("Start Training"),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(primary: Colors.black26),
+                      onPressed: () {
+                        if(AppDataProvider.of(context).appData.trainings.isEmpty){
+                          print("No Trainings available");
+                        }
+                        else{
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TrainingResult(
+                                    training: AppDataProvider.of(context)
+                                        .appData
+                                        .trainings
+                                        .first)));}
+                      },
+                      child: Text("Letztes Training")),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          height: 100,
+          margin: const EdgeInsets.fromLTRB(10.0, 10, 10.0, 10),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: ElevatedButton(
+              onPressed: () {
+
+              },
+              child: Text("Trainings"),
+            ),
+          ),
+        ),
+        TextButton(
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => testScreen()));
+            },
+            child: Text("Go to Test Screen")),
+        TextButton(
+          onPressed: () {
+            ichhassemeinLeben();
+          },
+          child: Text("Hard reset"),
+        ),
+      ],
+    ));
+  }
+
+  ichhassemeinLeben() async {
+    AppDataProvider.of(context).appData = new AppData([], []);
+    var prefs = await SharedPreferences.getInstance();
+    prefs.clear().then((value) => {loadAppData(),setState((){})});
+    print("everything is restet");
+  }
 
   List<Uebung> initUebungen() {
-
     String flachbankdruecken_Maschine_Beschreibung =
         "Wir greifen den horizontalen Griff so weit außen wie möglich, damit wir so stark wie nur möglich die Brust trainieren. Je enger wir greifen, desto verstärkt belasten wir den Trizeps, wie bei der Übung enges Bankdrücken. Stelle den Sitz für das Training so ein, dass die Griffe auf der Höhe deiner Brust sind. Aus der Kraft der Brustmuskeln drückst du das Gewicht ohne jeglichen Schwung nach vorne. Strecke jedoch deine Arme vorne nicht ganz durch, damit du die Spannung in den Muskeln nicht verlierst. Bleibe während der gesamten Ausführung mit deinem Oberkörper eng an der Rückenlehne und lasse ebenso deine Schultern hinten.";
     String butterflyBeschreibung =
@@ -89,90 +252,9 @@ class _MyHomePageState extends State<MyHomePage> {
         'exercises/scottcurls_maschine.jpg', "#a7eb7b", "", "", 4));
     tmp.add(Uebung("Trizepsdrücken am Kabel", trizepsdrueckenamKabelB,
         'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", "", 4));
-    tmp.add(Uebung("Bauchmaschine", crunchB, 'exercises/crunsh.jpeg',
-        "#00718f", "", "", 4));
+    tmp.add(Uebung("Bauchmaschine", crunchB, 'exercises/crunsh.jpeg', "#00718f",
+        "", "", 4));
     return tmp;
-  }
-
-  saveAppData() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("1, 2, 3, 5, 8, 13, 21, 34", jsonEncode(AppDataProvider.of(context).appData));
-    print("AppData Saved");
-  }
-
- loadAppData() async {
-    final prefs = await SharedPreferences.getInstance();
-    AppDataProvider.of(context).appData = AppData.fromJson(jsonDecode(
-        prefs.getString("1, 2, 3, 5, 8, 13, 21, 34") ?? "{\"uebungs\":"+jsonEncode(initUebungen())+", \"trainings\":[]}"));
-    print("loaded");
-  }
-  @override
-  void initState() {
-    loadAppData();
-    super.initState();
-    print("test");
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Fitness 3000" /*,style: GoogleFonts.notoSans(),*/)
-            .textColor(Colors.black)
-            .fontSize(25),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextButton(
-            child: Text(
-                AppDataProvider.of(context).appData.trainings.length.toString()),
-                onPressed: (){
-              setState(() {
-              });
-                },
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, 'onFitness')
-                  .then((_) {
-                saveAppData();
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => TrainingResult(
-                            training: AppDataProvider.of(context).appData.trainings.last)));
-              });
-            },
-            child: Text("Start Training"),
-          ),
-          TextButton(onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=> TrainingResult( training: AppDataProvider.of(context).appData.trainings.first)));
-          }
-              , child: Text("Letztes Training")),
-
-          TextButton(
-              onPressed: () => {ichhassemeinLeben()},
-              child: Text("Reset Übungnen")),
-          TextButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => testScreen()));
-              },
-              child: Text("Go to Test Screen")),
-          //Text("Letztes Traing: " + appData.trainings.last.uebungErgebnisse.first.name + " " + appData.trainings.last.uebungErgebnisse.first.repetitions.first.wert.toString())
-        ],
-      )),
-    );
-  }
-
-  ichhassemeinLeben() {
-    print("reset");
-    AppDataProvider.of(context).appData.trainings = [];
-    saveAppData();
   }
 }
 

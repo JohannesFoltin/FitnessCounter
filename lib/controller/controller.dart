@@ -19,5 +19,8 @@ class AppDataController {
       print("Error! That Training doesnt Exists!");
     }
   }
+  int getTrainingsThisMonth(DateTime month){
+    return appData.trainings.where((element) => element.date.month == month.month).length;
+}
 
 }

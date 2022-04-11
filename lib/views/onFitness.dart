@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:fitness_f/views/appData_provider.dart';
 import 'package:fitness_f/views/main.dart';
-import 'package:fitness_f/views/trainingResult.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:simple_timer/simple_timer.dart';
 
 class OnFitness extends StatefulWidget {
@@ -448,136 +446,6 @@ class UebungItem implements ListItem {
     );
   }
 }
-/*
-class CardItem implements ListItem {
-  late final AppData appData;
-  late final String name;
-  late Uebung uebung;
-
-  TextEditingController lastValueCont = new TextEditingController();
-  TextEditingController notizenCont = new TextEditingController();
-
-  CardItem(AppData appData, String name) {
-    this.uebung = appData.getUebungByName(name);
-    this.appData = appData;
-    this.name = name;
-    initValues();
-  }
-
-  initValues() {
-    if (appData.trainings.isNotEmpty) {
-     //ToDO
-    }
-    notizenCont.text =
-        appData.uebungs.firstWhere((element) => element.name == name).notizen;
-  }
-
-  @override
-  Widget buildCard(BuildContext context, Function r) {
-    lastValueCont.selection = TextSelection.fromPosition(
-        TextPosition(offset: lastValueCont.text.length));
-
-    notizenCont.selection = TextSelection.fromPosition(
-        TextPosition(offset: notizenCont.text.length));
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10.0),
-      child: Card(
-          key: Key(name),
-          color: HexColor.fromHex(uebung.color),
-          child: ExpansionTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  uebung.name,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 50,
-                  child: TextField(
-                    controller: lastValueCont,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(),
-                  ),
-                ),
-              ],
-            ),
-            trailing: _buildCheckButton(r),
-            children: [
-              _buildNotizen(context),
-              _buildBeschreibung(),
-              _buildBild(),
-            ],
-          )),
-    );
-  }
-
-  ElevatedButton _buildCheckButton(Function r) {
-    return ElevatedButton(
-      child: Icon(Icons.check),
-      onPressed: () => {r(this)},
-    );
-  }
-
-  ExpansionTile _buildBild() {
-    return ExpansionTile(
-      trailing: SizedBox.shrink(),
-      title: new Center(child: Text("Bild")),
-      children: [
-        Image(image: AssetImage(uebung.pictureAsset)),
-      ],
-    );
-  }
-
-  ExpansionTile _buildBeschreibung() {
-    return ExpansionTile(
-      trailing: SizedBox.shrink(),
-      title: new Center(child: Text("Erklärung")),
-      children: [
-        Text(
-          uebung.beschreibung,
-          textAlign: TextAlign.center,
-        )
-      ],
-    );
-  }
-
-  ExpansionTile _buildNotizen(BuildContext context) {
-    return ExpansionTile(
-      trailing: SizedBox.shrink(),
-      title: new Center(child: Text("Notizen")),
-      children: <Widget>[
-        TextField(
-          controller: notizenCont,
-          minLines: 5,
-          maxLines: null,
-          keyboardType: TextInputType.multiline,
-          decoration: new InputDecoration(
-            enabledBorder: const OutlineInputBorder(),
-          ),
-        ),
-        Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () => {
-                  appData.uebungs
-                      .firstWhere((element) => element.name == name)
-                      .setNotizen(notizenCont.text),
-                  FocusScope.of(context).unfocus()
-                },
-                child: Text("Speichern"),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-*/
 
 class TimerField extends StatefulWidget {
   TimerField(this.watch, this.returnHours);
