@@ -18,17 +18,12 @@ Map<String, dynamic> toJson() => _$AppDataToJson(this);
 @JsonSerializable()
 class AppData{
 
-  List<Uebung> uebungs;
+  List<TrainingPlan> trainingsPlans;
   List<Training> trainings;
 
-  AppData(this.uebungs,this.trainings);
+  AppData(this.trainingsPlans,this.trainings);
 
-  Uebung getUebungByName(String name){
-    return uebungs.firstWhere((element) => element.name == name);
-  }
-  List<Uebung> getUebungs(){
-    return uebungs;
-  }
+
   factory AppData.fromJson(Map<String, dynamic> json) => _$AppDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$AppDataToJson(this);

@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           'home': (context) => MyHomePage(),
-          'onFitness': (context) => OnFitness()
         },
         home: MyHomePage(),
       ),
@@ -50,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final prefs = await SharedPreferences.getInstance();
     AppDataProvider.of(context).appData = AppData.fromJson(jsonDecode(prefs
             .getString("1, 2, 3, 5, 8, 13, 21, 34") ??
-        "{\"uebungs\":" + jsonEncode(initUebungen()) + ", \"trainings\":[]}"));
+        "{\"trainingsPlans\":" + jsonEncode(initTrainingPlans()) + ", \"trainings\":[]}"));
     print("loaded");
   }
 
@@ -124,7 +123,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   borderRadius: BorderRadius.circular(10),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, 'onFitness').then((_) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                          builder: (context) => OnFitness(trainingPlan: AppDataProvider.of(context).appData.trainingsPlans.first,))).then((_) {
                         saveAppData();
                         Navigator.push(
                             context,
@@ -162,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         .trainings
                                         .first)));}
                       },
-                      child: Text("Letztes Training")),
+                      child: Text("Last Training")),
                 ),
               ),
             ],
@@ -176,7 +178,9 @@ class _MyHomePageState extends State<MyHomePage> {
             borderRadius: BorderRadius.circular(10),
             child: ElevatedButton(
               onPressed: () {
-
+                loadAppData();
+                setState(() {
+                });
               },
               child: Text("Trainings"),
             ),
@@ -194,6 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           child: Text("Hard reset"),
         ),
+        Text(AppDataProvider.of(context).appData.trainingsPlans.length.toString())
       ],
     ));
   }
@@ -205,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print("everything is restet");
   }
 
-  List<Uebung> initUebungen() {
+  List<TrainingPlan> initTrainingPlans() {
     String flachbankdruecken_Maschine_Beschreibung =
         "Wir greifen den horizontalen Griff so weit außen wie möglich, damit wir so stark wie nur möglich die Brust trainieren. Je enger wir greifen, desto verstärkt belasten wir den Trizeps, wie bei der Übung enges Bankdrücken. Stelle den Sitz für das Training so ein, dass die Griffe auf der Höhe deiner Brust sind. Aus der Kraft der Brustmuskeln drückst du das Gewicht ohne jeglichen Schwung nach vorne. Strecke jedoch deine Arme vorne nicht ganz durch, damit du die Spannung in den Muskeln nicht verlierst. Bleibe während der gesamten Ausführung mit deinem Oberkörper eng an der Rückenlehne und lasse ebenso deine Schultern hinten.";
     String butterflyBeschreibung =
@@ -227,8 +232,8 @@ class _MyHomePageState extends State<MyHomePage> {
     String crunchB =
         "Bei einem klassischen geraden Crunch legen Sie sich mit Ihrem Rücken auf den Boden. Winkeln Sie die Beine an (etwa 90 Grad), sodass diese im rechten Winkel zur Hüfte stehen. Die Arme zur Seite nehmen und mit den Fingerspitzen sachte die Schläfen berühren – und nicht am Kopf ziehen! Heben Sie nun mit der Kraft aus der Rumpfmuskulatur Ihren Oberkörper, bis die Schulterblätter den Boden nicht mehr berühren – mehr muss nicht sein. Den Rücken dabei möglichst gerade, den Kopf stets in der Linie Ihres Oberkörpers halten. Ein paar Sekunden die Endposition halten, dann Oberkörper langsam und kontrolliert absenken. In der niedrigsten Position stets die Muskelspannung im Bauch aufrechthalten. Wenn’s brennt, machen Sie es richtig. Tipp: Bei Bauchpressen mit angewinkelten Beinen die Fußspitzen anheben. Folge: Sie drücken die Fersen fester auf den Boden. " +
             "So tragen die Hilfsmuskeln kaum zu der Bewegung bei, was die Bauchmuskulatur stärker belastet";
-    List<Uebung> tmp = [];
-    tmp.add(Uebung(
+    List<Uebung> tmpUebungs = [];
+    tmpUebungs.add(Uebung(
         "Flachbankdrücken Maschine",
         flachbankdruecken_Maschine_Beschreibung,
         'exercises/flachbankdruecken_Maschine.png',
@@ -236,24 +241,26 @@ class _MyHomePageState extends State<MyHomePage> {
         "",
         "",
         4));
-    tmp.add(Uebung("Butterfly", butterflyBeschreibung,
+    tmpUebungs.add(Uebung("Butterfly", butterflyBeschreibung,
         'exercises/butterfly-maschine.jpg', "#ac4bb4", "", "", 4));
-    tmp.add(Uebung("Latzug zur Brust", latzugzurBrustB,
+    tmpUebungs.add(Uebung("Latzug zur Brust", latzugzurBrustB,
         'exercises/latzugzurBrust.png', "#c5118d", "", "", 4));
-    tmp.add(Uebung("Rudern am Kabel", rudernamKabelB,
+    tmpUebungs.add(Uebung("Rudern am Kabel", rudernamKabelB,
         'exercises/rudern-am-kabelzug.gif', "#c5118d", "", "", 4));
-    tmp.add(Uebung("Seitenheben Kurzhanteln", seithebenKurzhantelnB,
+    tmpUebungs.add(Uebung("Seitenheben Kurzhanteln", seithebenKurzhantelnB,
         'exercises/seitheben_mit_kurzhanteln.jpg', "#d32c60", "", "", 4));
-    tmp.add(Uebung("Beinpresse", beinpresseB, 'exercises/beinpresse.gif',
+    tmpUebungs.add(Uebung("Beinpresse", beinpresseB, 'exercises/beinpresse.gif',
         "#ffc41d", "", "", 4));
-    tmp.add(Uebung("Beincurls", beincurlsB, 'exercises/beincurls.gif',
+    tmpUebungs.add(Uebung("Beincurls", beincurlsB, 'exercises/beincurls.gif',
         "#ffc41d", "", "", 4));
-    tmp.add(Uebung("Scottcurls am Gerät", szCurlsB,
+    tmpUebungs.add(Uebung("Scottcurls am Gerät", szCurlsB,
         'exercises/scottcurls_maschine.jpg', "#a7eb7b", "", "", 4));
-    tmp.add(Uebung("Trizepsdrücken am Kabel", trizepsdrueckenamKabelB,
+    tmpUebungs.add(Uebung("Trizepsdrücken am Kabel", trizepsdrueckenamKabelB,
         'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", "", 4));
-    tmp.add(Uebung("Bauchmaschine", crunchB, 'exercises/crunsh.jpeg', "#00718f",
+    tmpUebungs.add(Uebung("Bauchmaschine", crunchB, 'exercises/crunsh.jpeg', "#00718f",
         "", "", 4));
+    List<TrainingPlan> tmp = [];
+    tmp.add(new TrainingPlan("Komplett Workout", tmpUebungs));
     return tmp;
   }
 }

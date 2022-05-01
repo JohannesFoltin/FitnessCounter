@@ -88,12 +88,32 @@ class _TrainingResult extends State<TrainingResult> {
                 child: ListView.builder(
                     itemCount: widget.training.uebungErgebnisse.length,
                     itemBuilder: (context, index) {
-                      final item = widget.training.uebungErgebnisse[index];
-                      return Uebungsresult(item).buildCard(context);
+                      return buildCard(context, widget.training.uebungErgebnisse[index]);
                     }))
           ],
         ),
       )),
+    );
+  }
+
+  Widget buildCard(BuildContext context, UebungsErgebniss uebungsErgebniss) {
+    return Container(
+      height: 100,
+      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+      child: Column(
+        children: [
+          Text(uebungsErgebniss.name),
+            Expanded(
+              child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: uebungsErgebniss.repetitions.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Text((index + 1).toString() + "x "+ uebungsErgebniss.repetitions[index].wert.toString());
+              }
+          ),
+            )
+        ],
+      ),
     );
   }
 
@@ -119,45 +139,6 @@ class _TrainingResult extends State<TrainingResult> {
                 },
             icon: Icon(Icons.check))
       ],
-    );
-  }
-}
-
-abstract class ListItem {
-  Widget buildCard(BuildContext context);
-}
-
-class Uebungsresult implements ListItem {
-  final UebungsErgebniss uebungsErgebniss;
-
-  Uebungsresult(this.uebungsErgebniss);
-
-  @override
-  Widget buildCard(BuildContext context) {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-      child: Column(
-        children: [
-          Text(uebungsErgebniss.name),
-          Expanded(
-            child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: uebungsErgebniss.repetitions.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    child: Row(
-                      children: [
-                        Text((index + 1).toString() + "x"),
-                        Text(
-                            uebungsErgebniss.repetitions[index].wert.toString())
-                      ],
-                    ),
-                  );
-                }),
-          )
-        ],
-      ),
     );
   }
 }
