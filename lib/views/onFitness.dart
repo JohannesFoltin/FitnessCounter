@@ -214,16 +214,6 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   }
 
   void removeItem(UebungItem c) {
-    if (c.noteBuffer != '') {
-      //haesslig :)
-      AppDataProvider.of(context)
-          .appData
-          .trainingsPlans
-          .firstWhere((element) => element == widget.trainingPlan)
-          .exercises
-          .firstWhere((element) => element.name == c.uebung.name)
-          .notizen = c.noteBuffer;
-    }
     setState(() {
       uebungenLeft.remove(c);
       UebungsErgebniss uebungsErgebniss =
@@ -254,7 +244,6 @@ class UebungItem implements ListItem {
   Uebung uebung;
   late int remainingreps;
   List<Rep> reps = [];
-  String noteBuffer = "";
 
   TextEditingController lastValueCont = new TextEditingController();
   TextEditingController notizenCont = new TextEditingController();
@@ -418,7 +407,8 @@ class UebungItem implements ListItem {
               children: [
                 TextButton(
                   onPressed: () => {
-                    noteBuffer = notizenCont.text,
+                    //noteBuffer = notizenCont.text,
+                    uebung.notizen = notizenCont.text,
                     FocusScope.of(context).unfocus()
                   },
                   child: Text("Speichern"),
