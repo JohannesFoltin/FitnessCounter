@@ -47,9 +47,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> loadAppData() async {
     final prefs = await SharedPreferences.getInstance();
-    AppDataProvider.of(context).appData = AppData.fromJson(jsonDecode(prefs
-            .getString("1, 2, 3, 5, 8, 13, 21, 34") ??
-        "{\"trainingsPlans\":" + jsonEncode(initTrainingPlans()) + ", \"trainings\":[]}"));
+    AppDataProvider.of(context).appData = AppData.fromJson(jsonDecode(
+        prefs.getString("1, 2, 3, 5, 8, 13, 21, 34") ??
+            "{\"trainingsPlans\":" +
+                jsonEncode(initTrainingPlans()) +
+                ", \"trainings\":[]}"));
     print("loaded");
   }
 
@@ -65,7 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     loadAppData().then((value) => {isLoaded = true, setState(() {})});
     super.initState();
-    print("test");
   }
 
   @override
@@ -126,7 +127,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                          builder: (context) => OnFitness(trainingPlan: AppDataProvider.of(context).appData.trainingsPlans.first,))).then((_) {
+                              builder: (context) => OnFitness(
+                                    trainingPlan: AppDataProvider.of(context)
+                                        .appData
+                                        .trainingsPlans
+                                        .first,
+                                  ))).then((_) {
                         saveAppData();
                         Navigator.push(
                             context,
@@ -151,18 +157,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(primary: Colors.black26),
                       onPressed: () {
-                        if(AppDataProvider.of(context).appData.trainings.isEmpty){
+                        if (AppDataProvider.of(context)
+                            .appData
+                            .trainings
+                            .isEmpty) {
                           print("No Trainings available");
+                        } else {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TrainingResult(
+                                      training: AppDataProvider.of(context)
+                                          .appData
+                                          .trainings
+                                          .last)));
                         }
-                        else{
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TrainingResult(
-                                    training: AppDataProvider.of(context)
-                                        .appData
-                                        .trainings
-                                        .first)));}
                       },
                       child: Text("Last Training")),
                 ),
@@ -179,8 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ElevatedButton(
               onPressed: () {
                 loadAppData();
-                setState(() {
-                });
+                setState(() {});
               },
               child: Text("Trainings"),
             ),
@@ -198,7 +206,11 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           child: Text("Hard reset"),
         ),
-        Text(AppDataProvider.of(context).appData.trainingsPlans.length.toString())
+        Text(AppDataProvider.of(context)
+            .appData
+            .trainingsPlans
+            .length
+            .toString())
       ],
     ));
   }
@@ -206,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ichhassemeinLeben() async {
     AppDataProvider.of(context).appData = new AppData([], []);
     var prefs = await SharedPreferences.getInstance();
-    prefs.clear().then((value) => {loadAppData(),setState((){})});
+    prefs.clear().then((value) => {loadAppData(), setState(() {})});
     print("everything is restet");
   }
 
@@ -257,8 +269,8 @@ class _MyHomePageState extends State<MyHomePage> {
         'exercises/scottcurls_maschine.jpg', "#a7eb7b", "", "", 4));
     tmpUebungs.add(Uebung("Trizepsdrücken am Kabel", trizepsdrueckenamKabelB,
         'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", "", 4));
-    tmpUebungs.add(Uebung("Bauchmaschine", crunchB, 'exercises/crunsh.jpeg', "#00718f",
-        "", "", 4));
+    tmpUebungs.add(Uebung("Bauchmaschine", crunchB, 'exercises/crunsh.jpeg',
+        "#00718f", "", "", 4));
     List<TrainingPlan> tmp = [];
     tmp.add(new TrainingPlan("Komplett Workout", tmpUebungs));
     return tmp;

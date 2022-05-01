@@ -7,13 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:simple_timer/simple_timer.dart';
 
 class OnFitness extends StatefulWidget {
-
-  OnFitness({Key? key,required this.trainingPlan}) : super(key: key);
+  OnFitness({Key? key, required this.trainingPlan}) : super(key: key);
 
   final TrainingPlan trainingPlan;
+
   @override
   _OnFitness createState() => _OnFitness();
 
+  //ToDo: Hinzufügen zum Controller
   static String formatTime(int milliseconds, bool returnHours) {
     var secs = milliseconds ~/ 1000;
     var hours = (secs ~/ 3600).toString().padLeft(2, '0');
@@ -28,7 +29,6 @@ class OnFitness extends StatefulWidget {
 
 class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   bool run = true;
-  bool uebungsAlreadyInit = false;
   Stopwatch _stopwatch = new Stopwatch();
   late List<UebungItem> uebungenLeft;
   late Training training;
@@ -38,11 +38,13 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     _countDownController = TimerController(this);
     _stopwatch.start();
     dateCode = DateTime.now();
     training = new Training(0, dateCode, []);
+    uebungenLeft =
+        widget.trainingPlan.exercises.map((u) => new UebungItem(u)).toList();
+    print("I listed");
     super.initState();
   }
 
@@ -100,8 +102,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
         width: 100,
         color: Colors.red,
         child: TextButton(
-          onPressed: () =>
-          {
+          onPressed: () => {
             if (_countDownController.isAnimating)
               {_countDownController.stop()}
             else
@@ -114,7 +115,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
             displayProgressIndicator: false,
             duration: Duration(minutes: 1, seconds: 30),
             progressTextCountDirection:
-            TimerProgressTextCountDirection.count_down,
+                TimerProgressTextCountDirection.count_down,
             onEnd: () => {_countDownController.reset()},
           ),
         ));
@@ -122,8 +123,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
 
   TextButton _buildTimeController(BuildContext context) {
     return TextButton(
-      onPressed: () =>
-      {
+      onPressed: () => {
         setState(() {
           handleStartStop();
           if (buttonColor == Colors.orange) {
@@ -133,21 +133,18 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
           }
         })
       },
-      onLongPress: () =>
-      {
+      onLongPress: () => {
         showDialog<String>(
             context: context,
-            builder: (BuildContext context) =>
-                AlertDialog(
+            builder: (BuildContext context) => AlertDialog(
                   actionsAlignment: MainAxisAlignment.center,
                   title:
-                  const Text('Willst du das Training wirklich abbrechen?'),
-                  content: const Text(
-                      'Bereits eingetragende Werte gehen nicht verloren! Notizen bleiben aber erhalten...'),
+                      const Text('Willst du das Training wirklich abbrechen?'),
+                  content: const Text('Alles geht verloren...'),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () =>
-                      {Navigator.pop(context), Navigator.pop(context)},
+                          {Navigator.pop(context), Navigator.pop(context)},
                       child: const Text('OK'),
                     ),
                     TextButton(
@@ -167,26 +164,16 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
       automaticallyImplyLeading: false,
       centerTitle: true,
       title: Text("Training am " +
-          DateTime
-              .now()
-              .day
-              .toString() +
+          DateTime.now().day.toString() +
           "." +
-          DateTime
-              .now()
-              .month
-              .toString() +
+          DateTime.now().month.toString() +
           "." +
-          DateTime
-              .now()
-              .year
-              .toString()),
+          DateTime.now().year.toString()),
       actions: [
         IconButton(
-            onPressed: () =>
-            {
-              _showFinishDialog(),
-            },
+            onPressed: () => {
+                  _showFinishDialog(),
+                },
             icon: Icon(Icons.check))
       ],
     );
@@ -195,8 +182,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   Future<String?> _showFinishDialog() {
     return showDialog<String>(
         context: context,
-        builder: (BuildContext context) =>
-            AlertDialog(
+        builder: (BuildContext context) => AlertDialog(
               actionsAlignment: MainAxisAlignment.center,
               title: const Text('Bist du fertig mit dem Training?'),
               actions: <Widget>[
@@ -213,15 +199,6 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   }
 
   ListView _buildUebungenList() {
-    if (!uebungsAlreadyInit) {
-      AppData tmp = AppDataProvider
-          .of(context)
-          .appData;
-      uebungenLeft =
-          widget.trainingPlan.exercises.map((u) => new UebungItem(tmp, u.name)).toList();
-      print("Ich habe gelistet");
-      uebungsAlreadyInit = true;
-    }
     return ListView.builder(
         itemCount: uebungenLeft.length,
         itemBuilder: (context, index) {
@@ -237,13 +214,22 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   }
 
   void removeItem(UebungItem c) {
-    if (c.remainingwiederholung == 0) {
+    if (c.noteBuffer != '') {
+      //haesslig :)
+      AppDataProvider.of(context)
+          .appData
+          .trainingsPlans
+          .firstWhere((element) => element == widget.trainingPlan)
+          .exercises
+          .firstWhere((element) => element.name == c.uebung.name)
+          .notizen = c.noteBuffer;
+    }
+    setState(() {
       uebungenLeft.remove(c);
       UebungsErgebniss uebungsErgebniss =
-      new UebungsErgebniss(c.name, c.reps, 0);
+          new UebungsErgebniss(c.uebung.name, c.reps, 0);
       training.uebungErgebnisse.add(uebungsErgebniss);
-    }
-    setState(() {});
+    });
     if (uebungenLeft.isEmpty) {
       _showFinishDialog();
     }
@@ -265,141 +251,109 @@ abstract class ListItem {
 }
 
 class UebungItem implements ListItem {
-  late final String name;
-  late Uebung uebung;
-  late int remainingwiederholung;
-  late List<wiederholung> reps;
+  Uebung uebung;
+  late int remainingreps;
+  List<wiederholung> reps = [];
+  String noteBuffer = "";
 
   TextEditingController lastValueCont = new TextEditingController();
   TextEditingController notizenCont = new TextEditingController();
 
-  UebungItem(
-      String name,) {
-    this.name = name;
-  }
-
-  initValues(BuildContext context) {
-    uebung
-    reps = [];
-    remainingwiederholung =
-        appData.uebungs
-            .firstWhere((element) => element.name == name)
-            .reps;
-    notizenCont.text =
-        AppDataProvider.of(context).appData.uebungs
-            .firstWhere((element) => element.name == name)
-            .notizen;
+  UebungItem(this.uebung) {
+    remainingreps = uebung.reps;
+    notizenCont.text = uebung.notizen;
   }
 
   @override
   Widget buildCard(BuildContext context, Function r) {
-    initValues(context);
     lastValueCont.selection = TextSelection.fromPosition(
         TextPosition(offset: lastValueCont.text.length));
     notizenCont.selection = TextSelection.fromPosition(
         TextPosition(offset: notizenCont.text.length));
-    return StatefulBuilder(
-        builder: (BuildContext context,
-            void Function(void Function()) setState) {
-          return Container(
-            margin: const EdgeInsets.fromLTRB(10.0, 2.5, 10.0, 2.5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: Container(
-                color: HexColor.fromHex(uebung.color),
-                height: 50,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Flexible(
-                      child: Text(" x" + remainingwiederholung.toString()),
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: TextButton(
-                        onPressed: () =>
-                        {
-                          print("tse"),
-                          _showInfoScreen(context)
-                        },
-                        style: TextButton.styleFrom(
-                          alignment: Alignment.centerLeft,
-                          primary: Colors.black,
-                          textStyle:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        child: Text(
-                          uebung.name,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                        child: SizedBox(
-                          height: 25,
-                          child: TextField(
-                            controller: lastValueCont,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              fillColor: Colors.white,
-                              filled: true,
-                            ),
-                          ),
-                        )),
-                    Flexible(
-                        child: ElevatedButton(
-                          onPressed: () =>
-                          {
-                            if (lastValueCont.text == "")
-                              {print("Error. No lastValueCont text")}
-                            else
-                              if (remainingwiederholung > 0)
-                                {
-                                  setState(() {
-                                    remainingwiederholung--;
-                                    print("SetSTATE!!!");
-                                  }),
-                                  reps.add(new wiederholung(
-                                      int.parse(lastValueCont.text))),
-                                  lastValueCont.clear(),
-                                  r(this)
-                                }
-                              else
-                                {r(this)},
-                          },
-                          onLongPress: () =>
-                          {
-                            if (lastValueCont.text == "")
-                              {print("Error. No lastValueCont text")}
-                            else
-                              {
-                                for (int i = 0; i < remainingwiederholung; i++)
-                                  {
-                                    reps.add(
-                                        new wiederholung(
-                                            int.parse(lastValueCont.text))),
-                                  },
-                                remainingwiederholung = 0,
-                                r(this),
-                              }
-                          },
-                          child: Icon(Icons.check),
-                        )),
-                  ],
+    return StatefulBuilder(builder:
+        (BuildContext context, void Function(void Function()) setState) {
+      return Container(
+        margin: const EdgeInsets.fromLTRB(10.0, 2.5, 10.0, 2.5),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10.0),
+          child: Container(
+            color: HexColor.fromHex(uebung.color),
+            height: 50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Flexible(
+                  child: Text(" x" + remainingreps.toString()),
                 ),
-              ),
+                Expanded(
+                  flex: 4,
+                  child: TextButton(
+                    onPressed: () => {print("tse"), _showInfoScreen(context)},
+                    style: TextButton.styleFrom(
+                      alignment: Alignment.centerLeft,
+                      primary: Colors.black,
+                      textStyle:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    child: Text(
+                      uebung.name,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                Expanded(
+                    child: SizedBox(
+                  height: 25,
+                  child: TextField(
+                    controller: lastValueCont,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      fillColor: Colors.white,
+                      filled: true,
+                    ),
+                  ),
+                )),
+                Flexible(
+                    child: ElevatedButton(
+                  onPressed: () => {
+                    if (lastValueCont.text == "")
+                      {print("Error. No lastValueCont text")},
+                    setState(() {
+                      remainingreps--;
+                    }),
+                    reps.add(new wiederholung(int.parse(lastValueCont.text))),
+                    lastValueCont.clear(),
+                    if (remainingreps == 0) {r(this)}
+                  },
+                  onLongPress: () => {
+                    if (lastValueCont.text == "")
+                      {print("Error. No lastValueCont text")}
+                    else
+                      {
+                        for (int i = 0; i < remainingreps; i++)
+                          {
+                            reps.add(new wiederholung(
+                                int.parse(lastValueCont.text))),
+                          },
+                        remainingreps = 0,
+                        r(this),
+                      }
+                  },
+                  child: Icon(Icons.check),
+                )),
+              ],
             ),
-          );
-        }
-    );
+          ),
+        ),
+      );
+    });
   }
 
   Future<String?> _showInfoScreen(BuildContext context) {
     return showDialog<String>(
         context: context,
-        builder: (BuildContext context) =>
-            AlertDialog(
+        builder: (BuildContext context) => AlertDialog(
               scrollable: true, // <-- Set it to true
               actionsAlignment: MainAxisAlignment.center,
               actions: [
@@ -410,11 +364,11 @@ class UebungItem implements ListItem {
               content: Column(
                 children: [
                   Divider(color: Colors.black),
+                  notizenContainer(context),
+                  Divider(color: Colors.black),
                   _buildBild(),
                   Divider(color: Colors.black),
                   _buildBeschreibung(),
-                  Divider(color: Colors.black),
-                  notizenContainer(context),
                   Divider(color: Colors.black),
                 ],
               ),
@@ -424,11 +378,11 @@ class UebungItem implements ListItem {
   Container _buildBild() {
     return Container(
         child: Column(
-          children: [
-            Text("Bild"),
-            Image(image: AssetImage(uebung.pictureAsset)),
-          ],
-        ));
+      children: [
+        Text("Bild"),
+        Image(image: AssetImage(uebung.pictureAsset)),
+      ],
+    ));
   }
 
   Container _buildBeschreibung() {
@@ -464,11 +418,8 @@ class UebungItem implements ListItem {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () =>
-                  {
-                    appData.uebungs
-                        .firstWhere((element) => element.name == name)
-                        .setNotizen(notizenCont.text),
+                  onPressed: () => {
+                    noteBuffer = notizenCont.text,
                     FocusScope.of(context).unfocus()
                   },
                   child: Text("Speichern"),
