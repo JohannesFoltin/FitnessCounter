@@ -1,14 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:fitness_f/models/datalayer.dart';
 
 part 'wiederholung.g.dart';
 
 @JsonSerializable()
-class wiederholung{
+class Rep {
   int wert;
-  wiederholung(this.wert);
+  Rep(this.wert);
 
-  factory wiederholung.fromJson(Map<String, dynamic> json) => _$wiederholungFromJson(json);
+  factory Rep.fromJson(Map<String, dynamic> json) =>
+      _$wiederholungFromJson(json);
 
   Map<String, dynamic> toJson() => _$wiederholungToJson(this);
 }

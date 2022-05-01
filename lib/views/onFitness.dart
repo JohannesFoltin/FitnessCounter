@@ -253,7 +253,7 @@ abstract class ListItem {
 class UebungItem implements ListItem {
   Uebung uebung;
   late int remainingreps;
-  List<wiederholung> reps = [];
+  List<Rep> reps = [];
   String noteBuffer = "";
 
   TextEditingController lastValueCont = new TextEditingController();
@@ -322,7 +322,7 @@ class UebungItem implements ListItem {
                     setState(() {
                       remainingreps--;
                     }),
-                    reps.add(new wiederholung(int.parse(lastValueCont.text))),
+                    reps.add(new Rep(int.parse(lastValueCont.text))),
                     lastValueCont.clear(),
                     if (remainingreps == 0) {r(this)}
                   },
@@ -333,8 +333,7 @@ class UebungItem implements ListItem {
                       {
                         for (int i = 0; i < remainingreps; i++)
                           {
-                            reps.add(new wiederholung(
-                                int.parse(lastValueCont.text))),
+                            reps.add(new Rep(int.parse(lastValueCont.text))),
                           },
                         remainingreps = 0,
                         r(this),

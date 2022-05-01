@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'main.dart';
 
 class TrainingResult extends StatefulWidget {
-  TrainingResult({Key? key, required this.training})
-      : super(key: key);
+  TrainingResult({Key? key, required this.training}) : super(key: key);
 
   final Training training;
 
@@ -26,14 +25,13 @@ class TrainingResult extends StatefulWidget {
 class _TrainingResult extends State<TrainingResult> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
-      onWillPop: ()async=>false,
+      onWillPop: () async => false,
       child: SafeArea(
           child: Scaffold(
         appBar: _buildAppBar(),
@@ -68,17 +66,19 @@ class _TrainingResult extends State<TrainingResult> {
                           border: Border.all(
                             color: Colors.black,
                           ),
-                          borderRadius: BorderRadius.all(Radius.circular(10))
-                      ),
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Gesamt bewegtes Gewicht: "  /*Todo*/),
-                          Text("Absolvierte Übungen: " + widget.training.uebungErgebnisse.length.toString())
+                          Text("Gesamt bewegtes Gewicht: " /*Todo*/),
+                          Text("Absolvierte Übungen: " +
+                              widget.training.uebungErgebnisse.length
+                                  .toString())
                         ],
                       ),
+                    ),
                   ),
-                ),),
+                ),
               ],
             ),
             SizedBox(
@@ -88,7 +88,8 @@ class _TrainingResult extends State<TrainingResult> {
                 child: ListView.builder(
                     itemCount: widget.training.uebungErgebnisse.length,
                     itemBuilder: (context, index) {
-                      return buildCard(context, widget.training.uebungErgebnisse[index]);
+                      return buildCard(
+                          context, widget.training.uebungErgebnisse[index]);
                     }))
           ],
         ),
@@ -103,15 +104,16 @@ class _TrainingResult extends State<TrainingResult> {
       child: Column(
         children: [
           Text(uebungsErgebniss.name),
-            Expanded(
-              child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: uebungsErgebniss.repetitions.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Text((index + 1).toString() + "x "+ uebungsErgebniss.repetitions[index].wert.toString());
-              }
-          ),
-            )
+          Expanded(
+            child: ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: uebungsErgebniss.repetitions.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Text((index + 1).toString() +
+                      "x " +
+                      uebungsErgebniss.repetitions[index].wert.toString());
+                }),
+          )
         ],
       ),
     );
@@ -127,17 +129,14 @@ class _TrainingResult extends State<TrainingResult> {
           "." +
           widget.training.date.month.toString() +
           "." +
-          widget.training.date.year.toString()+
-          " um "+
-          widget.training.date.hour.toString()+
-          ":"+
+          widget.training.date.year.toString() +
+          " um " +
+          widget.training.date.hour.toString() +
+          ":" +
           widget.training.date.minute.toString()),
       actions: [
         IconButton(
-            onPressed: () => {
-                 Navigator.pop(context)
-                },
-            icon: Icon(Icons.check))
+            onPressed: () => {Navigator.pop(context)}, icon: Icon(Icons.check))
       ],
     );
   }

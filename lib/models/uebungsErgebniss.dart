@@ -7,13 +7,14 @@ import 'package:json_annotation/json_annotation.dart';
 part 'uebungsErgebniss.g.dart';
 
 @JsonSerializable()
-class UebungsErgebniss{
+class UebungsErgebniss {
   String name;
   int dauer;
-  List<wiederholung> repetitions;
+  List<Rep> repetitions;
 
-  UebungsErgebniss(this.name,this.repetitions,this.dauer);
-  factory UebungsErgebniss.fromJson(Map<String, dynamic> json) => _$UebungsErgebnissFromJson(json);
+  UebungsErgebniss(this.name, this.repetitions, this.dauer);
+  factory UebungsErgebniss.fromJson(Map<String, dynamic> json) =>
+      _$UebungsErgebnissFromJson(json);
 
   Map<String, dynamic> toJson() => _$UebungsErgebnissToJson(this);
 }

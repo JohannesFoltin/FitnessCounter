@@ -6,11 +6,10 @@ part of 'wiederholung.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-wiederholung _$wiederholungFromJson(Map<String, dynamic> json) => wiederholung(
+Rep _$wiederholungFromJson(Map<String, dynamic> json) => Rep(
       json['wert'] as int,
     );
 
-Map<String, dynamic> _$wiederholungToJson(wiederholung instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$wiederholungToJson(Rep instance) => <String, dynamic>{
       'wert': instance.wert,
     };

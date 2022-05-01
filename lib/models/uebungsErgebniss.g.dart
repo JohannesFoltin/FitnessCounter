@@ -10,7 +10,7 @@ UebungsErgebniss _$UebungsErgebnissFromJson(Map<String, dynamic> json) =>
     UebungsErgebniss(
       json['name'] as String,
       (json['repetitions'] as List<dynamic>)
-          .map((e) => wiederholung.fromJson(e as Map<String, dynamic>))
+          .map((e) => Rep.fromJson(e as Map<String, dynamic>))
           .toList(),
       json['dauer'] as int,
     );

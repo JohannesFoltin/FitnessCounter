@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:fitness_f/models/datalayer.dart';
 
 /// This allows the `User` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
@@ -16,18 +15,12 @@ class Uebung {
   String einheit;
   String color;
 
-  Uebung(
-    this.name,
-    this.beschreibung,
-    this.pictureAsset,
-    this.color,
-    this.notizen,
-    this.einheit,
-    this.reps
-  );
-  setNotizen(String notiz){
+  Uebung(this.name, this.beschreibung, this.pictureAsset, this.color,
+      this.notizen, this.einheit, this.reps);
+  setNotizen(String notiz) {
     this.notizen = notiz;
   }
+
   factory Uebung.fromJson(Map<String, dynamic> json) => _$UebungFromJson(json);
 
   Map<String, dynamic> toJson() => _$UebungToJson(this);

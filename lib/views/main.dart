@@ -197,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
         TextButton(
             onPressed: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => testScreen()));
+                  MaterialPageRoute(builder: (context) => TestScreen()));
             },
             child: Text("Go to Test Screen")),
         TextButton(
@@ -223,7 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<TrainingPlan> initTrainingPlans() {
-    String flachbankdruecken_Maschine_Beschreibung =
+    String flachbankdrueckenMaschineBeschreibung =
         "Wir greifen den horizontalen Griff so weit außen wie möglich, damit wir so stark wie nur möglich die Brust trainieren. Je enger wir greifen, desto verstärkt belasten wir den Trizeps, wie bei der Übung enges Bankdrücken. Stelle den Sitz für das Training so ein, dass die Griffe auf der Höhe deiner Brust sind. Aus der Kraft der Brustmuskeln drückst du das Gewicht ohne jeglichen Schwung nach vorne. Strecke jedoch deine Arme vorne nicht ganz durch, damit du die Spannung in den Muskeln nicht verlierst. Bleibe während der gesamten Ausführung mit deinem Oberkörper eng an der Rückenlehne und lasse ebenso deine Schultern hinten.";
     String butterflyBeschreibung =
         "Damit du effizient deinen großen Brustmuskel trainierst, solltest du die richtige Ausgangsposition einnehmen. Setze dich auf das Polster der Maschine und drücke deinen Rücken gegen die Lehne. Anschließend umfasst du beide Stangen im normalen Griff. Achte darauf, dass sich deine Arme parallel zum Boden befinden. Um deine Brustmuskulatur zu trainieren, sollten die Arme zudem auf der Höhe deiner Brust sein. Beide Füße stehen für einen stabilen Halt fest auf dem Boden. Du greifst beide Griffstangen und führst die Hände nach vorne. Bewege die Arme so weit, bis die Griffstangen vor der Brust zusammentreffen (oder kurz bevor sie sich berühren). Die Arme sollten fast durchgestreckt sein. Beim Zusammenführen der Arme vorne vor der Brust atmest du aus. Anschließend kannst du einatmen, während die Arme kontrolliert in die Ausgangsposition zurückkehren. Du stoppst mit der Bewegung, wenn sich deine Arme in einer Linie mit dem Körper befinden.";
@@ -247,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Uebung> tmpUebungs = [];
     tmpUebungs.add(Uebung(
         "Flachbankdrücken Maschine",
-        flachbankdruecken_Maschine_Beschreibung,
+        flachbankdrueckenMaschineBeschreibung,
         'exercises/flachbankdruecken_Maschine.png',
         "#ac4bb4",
         "",

@@ -1,17 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:styled_widget/styled_widget.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
-class testScreen extends StatefulWidget {
-  testScreen({Key? key}) : super(key: key);
+class TestScreen extends StatefulWidget {
+  TestScreen({Key? key}) : super(key: key);
 
   @override
-  _testScreen createState() => _testScreen();
+  _TestScreen createState() => _TestScreen();
 }
 
-class _testScreen extends State<testScreen> {
+class _TestScreen extends State<TestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,8 +16,4 @@ class _testScreen extends State<testScreen> {
       ),
     );
   }
-
 }
-
-
-
