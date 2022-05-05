@@ -1,6 +1,5 @@
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:flutter/material.dart';
-import 'package:styled_widget/styled_widget.dart';
 import 'main.dart';
 
 class TrainingResult extends StatefulWidget {

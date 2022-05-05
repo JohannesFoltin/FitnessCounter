@@ -1,6 +1,8 @@
 import 'package:fitness_f/views/appData_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fitness_f/views/trainingResult.dart';
+import 'package:provider/provider.dart';
+import '../controller/controller.dart';
 
 class TrainingOverview extends StatefulWidget {
   TrainingOverview({Key? key}) : super(key: key);
@@ -23,7 +25,10 @@ class _TrainingOverview extends State<TrainingOverview> {
       ),
       body: SafeArea(
         child: ListView.builder(
-          itemCount: AppDataProvider.of(context).appData.trainings.length,
+          itemCount: Provider.of<AppDataController>(context, listen: false)
+              .appData
+              .trainings
+              .length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
                 height: 50,
@@ -32,7 +37,7 @@ class _TrainingOverview extends State<TrainingOverview> {
                 child: ElevatedButton(
                   child: Text(
                     "Training am :" +
-                        AppDataProvider.of(context)
+                        Provider.of<AppDataController>(context, listen: false)
                             .appData
                             .trainings[index]
                             .date
@@ -43,7 +48,9 @@ class _TrainingOverview extends State<TrainingOverview> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => TrainingResult(
-                                training: AppDataProvider.of(context)
+                                training: Provider.of<AppDataController>(
+                                        context,
+                                        listen: false)
                                     .appData
                                     .trainings[index])))
                   },

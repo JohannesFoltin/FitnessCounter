@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:fitness_f/models/datalayer.dart';
-import 'package:fitness_f/views/appData_provider.dart';
 import 'package:fitness_f/views/main.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_timer/simple_timer.dart';
+
+import '../controller/controller.dart';
 
 class OnFitness extends StatefulWidget {
   OnFitness({Key? key, required this.trainingPlan}) : super(key: key);
@@ -209,7 +211,9 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
 
   void tot(Training training) {
     training.dauer = _stopwatch.elapsedMilliseconds;
-    AppDataProvider.of(context).addTraining(training);
+    Provider.of<AppDataController>(context, listen: false)
+        .addTraining(training);
+    Provider.of<AppDataController>(context, listen: false).saveAppData();
     Navigator.pop(context);
   }
 
