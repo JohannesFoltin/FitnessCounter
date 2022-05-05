@@ -1,5 +1,6 @@
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:flutter/material.dart';
+import 'package:styled_widget/styled_widget.dart';
 import 'main.dart';
 
 class TrainingResult extends StatefulWidget {
@@ -26,6 +27,13 @@ class _TrainingResult extends State<TrainingResult> {
   @override
   void initState() {
     super.initState();
+  }
+
+  int getMovedWeigth() {
+    int tmp = 0;
+    widget.training.uebungErgebnisse
+        .forEach((e) => e.repetitions.forEach((r) => {tmp = tmp + r.wert}));
+    return tmp;
   }
 
   @override
@@ -70,7 +78,8 @@ class _TrainingResult extends State<TrainingResult> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Gesamt bewegtes Gewicht: " /*Todo*/),
+                          Text("Gesamt bewegtes Gewicht: " +
+                              getMovedWeigth().toString()),
                           Text("Absolvierte Übungen: " +
                               widget.training.uebungErgebnisse.length
                                   .toString())
@@ -98,23 +107,28 @@ class _TrainingResult extends State<TrainingResult> {
   }
 
   Widget buildCard(BuildContext context, UebungsErgebniss uebungsErgebniss) {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-      child: Column(
-        children: [
-          Text(uebungsErgebniss.name),
-          Expanded(
-            child: ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: uebungsErgebniss.repetitions.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Text((index + 1).toString() +
-                      "x " +
-                      uebungsErgebniss.repetitions[index].wert.toString());
-                }),
-          )
-        ],
+    return Center(
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+        margin: const EdgeInsets.fromLTRB(50.0, 10, 50.0, 10),
+        child: Column(
+          children: [
+            Text(uebungsErgebniss.name),
+            Expanded(
+              child: ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: uebungsErgebniss.repetitions.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Center(
+                      child: Text((index + 1).toString() +
+                          "x " +
+                          uebungsErgebniss.repetitions[index].wert.toString()),
+                    );
+                  }),
+            )
+          ],
+        ),
       ),
     );
   }
