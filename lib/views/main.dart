@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:styled_widget/styled_widget.dart';
+import 'package:fitness_f/views/trainingOverview.dart';
 
 void main() {
   runApp(MyApp());
@@ -187,8 +188,10 @@ class _MyHomePageState extends State<MyHomePage> {
             borderRadius: BorderRadius.circular(10),
             child: ElevatedButton(
               onPressed: () {
-                loadAppData();
-                setState(() {});
+                  Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TrainingOverview()));
               },
               child: Text("Trainings"),
             ),
