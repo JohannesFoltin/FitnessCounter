@@ -1,4 +1,3 @@
-import 'package:fitness_f/views/appData_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fitness_f/views/trainingResult.dart';
 import 'package:provider/provider.dart';
