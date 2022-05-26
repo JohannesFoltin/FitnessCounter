@@ -16,11 +16,6 @@ class _TrainingOverview extends State<TrainingOverview> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Tranings Übersicht"),
-        actions: [
-          IconButton(
-              onPressed: () => {Navigator.pop(context)},
-              icon: Icon(Icons.arrow_back))
-        ],
       ),
       body: SafeArea(
         child: ListView.builder(

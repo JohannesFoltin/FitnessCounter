@@ -23,7 +23,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.purple,
+          fontFamily: 'Georgia',
         ),
         routes: {
           'home': (context) => MyHomePage(),
@@ -42,8 +43,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  
-
   @override
   Widget build(BuildContext context) {
     Widget? myWidget;
@@ -54,13 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text("Fitness 3000", style: GoogleFonts.notoSans())
-            .textColor(Colors.black)
-            .fontSize(25),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
+          title: Text("Fitness 3000",
+              style: Theme.of(context).textTheme.headlineMedium)),
       body: myWidget,
     );
   }

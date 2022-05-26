@@ -1,5 +1,7 @@
+import 'package:fitness_f/controller/controller.dart';
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UebungVisualiser extends StatefulWidget {
   const UebungVisualiser({Key? key, required this.uebung}) : super(key: key);
@@ -12,10 +14,70 @@ class UebungVisualiser extends StatefulWidget {
 
 class _UebungVisualiserState extends State<UebungVisualiser> {
   TextEditingController notizenCont = new TextEditingController();
+  List<UebungsErgebniss> lastTrainingsUebungsResults = [];
   @override
   void initState() {
     notizenCont.text = widget.uebung.notizen;
+    lastTrainingsUebungsResults = getUebungsErgebnisse(context);
     super.initState();
+  }
+
+  List<UebungsErgebniss> getUebungsErgebnisse(BuildContext context) {
+    List<UebungsErgebniss> tmp = [];
+    Provider.of<AppDataController>(context, listen: false)
+        .appData
+        .trainings
+        .forEach((element) {
+      element.uebungErgebnisse.forEach((e) {
+        if (e.name == widget.uebung.name) {
+          tmp.add(e);
+        }
+      });
+    });
+    print(tmp.length.toString());
+    return tmp;
+  }
+
+  String getMax() {
+    int max = 0;
+    if (lastTrainingsUebungsResults.isEmpty) {
+      return "Bis jetzt noch nicht absolviert. ERROR";
+    }
+    lastTrainingsUebungsResults.forEach((element) {
+      element.repetitions.forEach((e) {
+        if (e.wert > max) {
+          max = e.wert;
+        }
+      });
+    });
+    return max.toString();
+  }
+
+  String getMin() {
+    int min = 99999999;
+    if (lastTrainingsUebungsResults.isEmpty) {
+      return "Bis jetzt noch nicht absolviert. ERROR";
+    }
+    lastTrainingsUebungsResults.forEach((element) {
+      element.repetitions.forEach((e) {
+        if (e.wert < min && e.wert != 0) {
+          min = e.wert;
+        }
+      });
+    });
+    return min.toString();
+  }
+
+  String lastTraing() {
+    if (lastTrainingsUebungsResults.isEmpty) {
+      return "Bis jetzt noch nicht absolviert. ERROR";
+    }
+    String tmp = "";
+    UebungsErgebniss uTmp = lastTrainingsUebungsResults.last;
+    for (var i = 0; i < uTmp.repetitions.length; i++) {
+      tmp = tmp + uTmp.repetitions[i].wert.toString() + "kg, ";
+    }
+    return tmp;
   }
 
   @override
@@ -24,23 +86,49 @@ class _UebungVisualiserState extends State<UebungVisualiser> {
         TextPosition(offset: notizenCont.text.length));
     return Scaffold(
         appBar: AppBar(
-          actions: [
-            IconButton(
-                onPressed: () => {Navigator.pop(context)},
-                icon: Icon(Icons.arrow_back)),
-          ],
+          title: Text(widget.uebung.name),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Divider(color: Colors.black),
-            notizenContainer(context),
-            Divider(color: Colors.black),
-            _buildBild(),
-            Divider(color: Colors.black),
-            _buildBeschreibung(),
-            Divider(color: Colors.black),
-          ],
+        body: SizedBox.expand(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildBild(),
+                Divider(
+                  color: Colors.black,
+                ),
+                ExpansionTile(
+                  children: [notizenContainer(context)],
+                  title: Text("Notizen"),
+                ),
+                ExpansionTile(
+                  children: [_buildBeschreibung()],
+                  title: Text("Beschreibung"),
+                ),
+                Divider(
+                  color: Colors.black,
+                ),
+                Card(
+                  child: Container(
+                    width: double.infinity,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text(" Max: " + getMax() + "kg"),
+                          Text(" Min: " + getMin() + "kg"),
+                          Text(" Beim letzten Training: " + lastTraing()),
+                          SizedBox(
+                            height: 5,
+                          ),
+                        ]),
+                  ),
+                )
+              ],
+            ),
+          ),
         ));
   }
 
@@ -48,7 +136,6 @@ class _UebungVisualiserState extends State<UebungVisualiser> {
     return Container(
         child: Column(
       children: [
-        Text("Bild"),
         Image(image: AssetImage(widget.uebung.pictureAsset)),
       ],
     ));
@@ -72,7 +159,6 @@ class _UebungVisualiserState extends State<UebungVisualiser> {
     return Container(
       child: Column(
         children: [
-          Text("Notizen"),
           TextField(
             controller: notizenCont,
             minLines: 5,
@@ -83,18 +169,14 @@ class _UebungVisualiserState extends State<UebungVisualiser> {
             ),
           ),
           Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => {
-                    //noteBuffer = notizenCont.text,
-                    widget.uebung.notizen = notizenCont.text,
-                    FocusScope.of(context).unfocus()
-                  },
-                  child: Text("Speichern"),
-                ),
-              ],
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () => {
+                //noteBuffer = notizenCont.text,
+                widget.uebung.notizen = notizenCont.text,
+                FocusScope.of(context).unfocus()
+              },
+              child: Text("Speichern"),
             ),
           ),
         ],

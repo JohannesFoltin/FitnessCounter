@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:fitness_f/views/main.dart';
+import 'package:fitness_f/views/uebungVisualiser.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_timer/simple_timer.dart';
@@ -164,7 +165,6 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
     return AppBar(
       backgroundColor: HexColor.fromHex("#006666"),
       automaticallyImplyLeading: false,
-      centerTitle: true,
       title: Text("Training am " +
           DateTime.now().day.toString() +
           "." +
@@ -281,7 +281,14 @@ class UebungItem implements ListItem {
                 Expanded(
                   flex: 4,
                   child: TextButton(
-                    onPressed: () => {print("tse"), _showInfoScreen(context)},
+                    onPressed: () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => UebungVisualiser(
+                                    uebung: uebung,
+                                  ))))
+                    },
                     style: TextButton.styleFrom(
                       alignment: Alignment.centerLeft,
                       primary: Colors.black,
