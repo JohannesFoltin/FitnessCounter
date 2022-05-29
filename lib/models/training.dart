@@ -7,14 +7,16 @@ import 'package:json_annotation/json_annotation.dart';
 part 'training.g.dart';
 
 @JsonSerializable()
-
-class Training{
+class Training {
   int dauer;
   DateTime date;
+  String name;
   List<UebungsErgebniss> uebungErgebnisse;
 
-  Training(this.dauer,this.date,this.uebungErgebnisse);
-  factory Training.fromJson(Map<String, dynamic> json) => _$TrainingFromJson(json);
+  Training(this.dauer, this.date, this.name, this.uebungErgebnisse);
+
+  factory Training.fromJson(Map<String, dynamic> json) =>
+      _$TrainingFromJson(json);
 
   Map<String, dynamic> toJson() => _$TrainingToJson(this);
 }

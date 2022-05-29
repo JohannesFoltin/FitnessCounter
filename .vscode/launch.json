@@ -14,12 +14,14 @@
             "name": "FitnessCounter (profile mode)",
             "request": "launch",
             "type": "dart",
+            "program": "lib/views/main.dart",
             "flutterMode": "profile"
         },
         {
             "name": "FitnessCounter (release mode)",
             "request": "launch",
             "type": "dart",
+            "program": "lib/views/main.dart",
             "flutterMode": "release"
         }
     ]

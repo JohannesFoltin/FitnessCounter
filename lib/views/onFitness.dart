@@ -44,7 +44,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
     _countDownController = TimerController(this);
     _stopwatch.start();
     dateCode = DateTime.now();
-    training = new Training(0, dateCode, []);
+    training = new Training(0, dateCode, widget.trainingPlan.name,[]);
     uebungenLeft =
         widget.trainingPlan.exercises.map((u) => new UebungItem(u)).toList();
     print("I listed");
@@ -347,55 +347,6 @@ class UebungItem implements ListItem {
         ),
       );
     });
-  }
-
-  Future<String?> _showInfoScreen(BuildContext context) {
-    return showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              scrollable: true, // <-- Set it to true
-              actionsAlignment: MainAxisAlignment.center,
-              actions: [
-                TextButton(
-                    onPressed: () => {Navigator.pop(context)},
-                    child: Text("Fertig"))
-              ],
-              content: Column(
-                children: [
-                  Divider(color: Colors.black),
-                  notizenContainer(context),
-                  Divider(color: Colors.black),
-                  _buildBild(),
-                  Divider(color: Colors.black),
-                  _buildBeschreibung(),
-                  Divider(color: Colors.black),
-                ],
-              ),
-            ));
-  }
-
-  Container _buildBild() {
-    return Container(
-        child: Column(
-      children: [
-        Text("Bild"),
-        Image(image: AssetImage(uebung.pictureAsset)),
-      ],
-    ));
-  }
-
-  Container _buildBeschreibung() {
-    return Container(
-      child: Column(
-        children: [
-          Text("Beschreibung"),
-          Text(
-            uebung.beschreibung,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
   }
 
   Container notizenContainer(BuildContext context) {

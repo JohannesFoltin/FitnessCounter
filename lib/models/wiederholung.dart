@@ -7,8 +7,7 @@ class Rep {
   int wert;
   Rep(this.wert);
 
-  factory Rep.fromJson(Map<String, dynamic> json) =>
-      _$wiederholungFromJson(json);
+  factory Rep.fromJson(Map<String, dynamic> json) => _$RepFromJson(json);
 
-  Map<String, dynamic> toJson() => _$wiederholungToJson(this);
+  Map<String, dynamic> toJson() => _$RepToJson(this);
 }

@@ -104,7 +104,7 @@ class AppDataController extends ChangeNotifier {
     tmpUebungs.add(Uebung("Bauchmaschine", crunchB, 'exercises/crunsh.jpeg',
         "#00718f", "", "", 4));
     List<TrainingPlan> tmp = [];
-    tmp.add(new TrainingPlan("Komplett Workout", tmpUebungs));
+    tmp.add(new TrainingPlan("WorkoutGym", tmpUebungs));
     return tmp;
   }
 }
