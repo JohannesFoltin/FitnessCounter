@@ -9,7 +9,7 @@ class AppDataController extends ChangeNotifier {
   bool isloaded = false;
 
   AppDataController() {
-    loadAppData().then((value) => {notifyListeners(),isloaded = true});
+    loadAppData().then((value) => {notifyListeners(), isloaded = true});
   }
 
   void addTraining(Training training) {
@@ -27,12 +27,25 @@ class AppDataController extends ChangeNotifier {
   }
 
   Future<void> saveAppData() async {
+    isloaded = false;
     final prefs = await SharedPreferences.getInstance();
     prefs.setString("1, 2, 3, 5, 8, 13, 21, 34", jsonEncode(appData));
+    notifyListeners();
+    isloaded = true;
     print("AppData Saved");
   }
 
 //Wichitg! Future<void> ist wichtig für .then()
+  static String formatTime(int milliseconds, bool returnHours) {
+    var secs = milliseconds ~/ 1000;
+    var hours = (secs ~/ 3600).toString().padLeft(2, '0');
+    var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
+    var seconds = (secs % 60).toString().padLeft(2, '0');
+    if (returnHours)
+      return "$hours:$minutes:$seconds";
+    else
+      return "$minutes:$seconds";
+  }
 
   Future<void> loadAppData() async {
     final prefs = await SharedPreferences.getInstance();
