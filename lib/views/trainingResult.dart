@@ -31,7 +31,7 @@ class _TrainingResult extends State<TrainingResult> {
   int getMovedWeigth() {
     int tmp = 0;
     widget.training.uebungErgebnisse
-        .forEach((e) => e.repetitions.forEach((r) => {tmp = tmp + r.wert}));
+        .forEach((e) => e.sets.forEach((r) => {tmp = tmp + r.wert}));
     return tmp;
   }
 
@@ -113,16 +113,16 @@ class _TrainingResult extends State<TrainingResult> {
         margin: const EdgeInsets.fromLTRB(50.0, 10, 50.0, 10),
         child: Column(
           children: [
-            Text(uebungsErgebniss.name),
+            Text(uebungsErgebniss.uebung.name),
             Expanded(
               child: ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: uebungsErgebniss.repetitions.length,
+                  itemCount: uebungsErgebniss.sets.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Center(
                       child: Text((index + 1).toString() +
                           "x " +
-                          uebungsErgebniss.repetitions[index].wert.toString()),
+                          uebungsErgebniss.sets[index].wert.toString()),
                     );
                   }),
             )

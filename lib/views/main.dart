@@ -177,7 +177,21 @@ class _TrainingSelectorState extends State<TrainingSelector> {
               },
             ),
           ),
-          TextButton(onPressed: () {}, child: Text("Add Training"))
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              TextButton(onPressed: () {}, child: Text("Add Training")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                OnFitness(trainingPlan: null)));
+                  },
+                  child: Text("Freies Training")),
+            ],
+          )
         ],
       ),
     );

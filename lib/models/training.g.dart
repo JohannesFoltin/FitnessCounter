@@ -9,7 +9,6 @@ part of 'training.dart';
 Training _$TrainingFromJson(Map<String, dynamic> json) => Training(
       json['dauer'] as int,
       DateTime.parse(json['date'] as String),
-      json['name'] as String,
       (json['uebungErgebnisse'] as List<dynamic>)
           .map((e) => UebungsErgebniss.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -18,6 +17,5 @@ Training _$TrainingFromJson(Map<String, dynamic> json) => Training(
 Map<String, dynamic> _$TrainingToJson(Training instance) => <String, dynamic>{
       'dauer': instance.dauer,
       'date': instance.date.toIso8601String(),
-      'name': instance.name,
       'uebungErgebnisse': instance.uebungErgebnisse,
     };

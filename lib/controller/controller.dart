@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppDataController extends ChangeNotifier {
-  AppData appData = new AppData([], []);
+  AppData appData = new AppData([], [], []);
   bool isloaded = false;
 
   AppDataController() {
@@ -51,9 +51,9 @@ class AppDataController extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     appData = AppData.fromJson(jsonDecode(
         prefs.getString("1, 2, 3, 5, 8, 13, 21, 34") ??
-            "{\"trainingsPlans\":" +
-                jsonEncode(initTrainingPlans()) +
-                ", \"trainings\":[]}"));
+            "{\"trainings\":[], \"uebungs\":" +
+                jsonEncode(initUebungs()) +
+                ", \"trainingsPlans\":[]}"));
     print("loaded");
   }
 
@@ -67,7 +67,7 @@ class AppDataController extends ChangeNotifier {
     return appData.trainings.isEmpty;
   }
 
-  List<TrainingPlan> initTrainingPlans() {
+  List<Uebung> initUebungs() {
     String flachbankdrueckenMaschineBeschreibung =
         "Wir greifen den horizontalen Griff so weit außen wie möglich, damit wir so stark wie nur möglich die Brust trainieren. Je enger wir greifen, desto verstärkt belasten wir den Trizeps, wie bei der Übung enges Bankdrücken. Stelle den Sitz für das Training so ein, dass die Griffe auf der Höhe deiner Brust sind. Aus der Kraft der Brustmuskeln drückst du das Gewicht ohne jeglichen Schwung nach vorne. Strecke jedoch deine Arme vorne nicht ganz durch, damit du die Spannung in den Muskeln nicht verlierst. Bleibe während der gesamten Ausführung mit deinem Oberkörper eng an der Rückenlehne und lasse ebenso deine Schultern hinten.";
     String butterflyBeschreibung =
@@ -90,34 +90,87 @@ class AppDataController extends ChangeNotifier {
         "Bei einem klassischen geraden Crunch legen Sie sich mit Ihrem Rücken auf den Boden. Winkeln Sie die Beine an (etwa 90 Grad), sodass diese im rechten Winkel zur Hüfte stehen. Die Arme zur Seite nehmen und mit den Fingerspitzen sachte die Schläfen berühren – und nicht am Kopf ziehen! Heben Sie nun mit der Kraft aus der Rumpfmuskulatur Ihren Oberkörper, bis die Schulterblätter den Boden nicht mehr berühren – mehr muss nicht sein. Den Rücken dabei möglichst gerade, den Kopf stets in der Linie Ihres Oberkörpers halten. Ein paar Sekunden die Endposition halten, dann Oberkörper langsam und kontrolliert absenken. In der niedrigsten Position stets die Muskelspannung im Bauch aufrechthalten. Wenn’s brennt, machen Sie es richtig. Tipp: Bei Bauchpressen mit angewinkelten Beinen die Fußspitzen anheben. Folge: Sie drücken die Fersen fester auf den Boden. " +
             "So tragen die Hilfsmuskeln kaum zu der Bewegung bei, was die Bauchmuskulatur stärker belastet";
     List<Uebung> tmpUebungs = [];
+    //TODO farbe löschen und statdessen art abngeben (Rücken,bauch,oberarm, etc.)
     tmpUebungs.add(Uebung(
-        "Flachbankdrücken Maschine",
-        flachbankdrueckenMaschineBeschreibung,
-        'exercises/flachbankdruecken_Maschine.png',
-        "#ac4bb4",
-        "",
-        "",
-        4));
-    tmpUebungs.add(Uebung("Butterfly", butterflyBeschreibung,
-        'exercises/butterfly-maschine.jpg', "#ac4bb4", "", "", 4));
-    tmpUebungs.add(Uebung("Latzug zur Brust", latzugzurBrustB,
-        'exercises/latzugzurBrust.png', "#c5118d", "", "", 4));
-    tmpUebungs.add(Uebung("Rudern am Kabel", rudernamKabelB,
-        'exercises/rudern-am-kabelzug.gif', "#c5118d", "", "", 4));
-    tmpUebungs.add(Uebung("Seitenheben Kurzhanteln", seithebenKurzhantelnB,
-        'exercises/seitheben_mit_kurzhanteln.jpg', "#d32c60", "", "", 4));
-    tmpUebungs.add(Uebung("Beinpresse", beinpresseB, 'exercises/beinpresse.gif',
-        "#ffc41d", "", "", 4));
-    tmpUebungs.add(Uebung("Beincurls", beincurlsB, 'exercises/beincurls.gif',
-        "#ffc41d", "", "", 4));
-    tmpUebungs.add(Uebung("Scottcurls am Gerät", szCurlsB,
-        'exercises/scottcurls_maschine.jpg', "#a7eb7b", "", "", 4));
-    tmpUebungs.add(Uebung("Trizepsdrücken am Kabel", trizepsdrueckenamKabelB,
-        'exercises/trizepsdrückenamKabel.png', "#68d9f3", "", "", 4));
-    tmpUebungs.add(Uebung("Bauchmaschine", crunchB, 'exercises/crunsh.jpeg',
-        "#00718f", "", "", 4));
-    List<TrainingPlan> tmp = [];
-    tmp.add(new TrainingPlan("WorkoutGym", tmpUebungs));
-    return tmp;
+      "Flachbankdrücken Maschine",
+      flachbankdrueckenMaschineBeschreibung,
+      'exercises/flachbankdruecken_Maschine.png',
+      "#ac4bb4",
+      "",
+      "", 0
+    ));
+    tmpUebungs.add(Uebung(
+      "Butterfly",
+      butterflyBeschreibung,
+      'exercises/butterfly-maschine.jpg',
+      "#ac4bb4",
+      "",
+      "",0
+    ));
+    tmpUebungs.add(Uebung(
+      "Latzug zur Brust",
+      latzugzurBrustB,
+      'exercises/latzugzurBrust.png',
+      "#c5118d",
+      "",
+      "",0
+    ));
+    tmpUebungs.add(Uebung(
+      "Rudern am Kabel",
+      rudernamKabelB,
+      'exercises/rudern-am-kabelzug.gif',
+      "#c5118d",
+      "",
+      "",0
+    ));
+    tmpUebungs.add(Uebung(
+      "Seitenheben Kurzhanteln",
+      seithebenKurzhantelnB,
+      'exercises/seitheben_mit_kurzhanteln.jpg',
+      "#d32c60",
+      "",
+      "",0
+    ));
+    tmpUebungs.add(Uebung(
+      "Beinpresse",
+      beinpresseB,
+      'exercises/beinpresse.gif',
+      "#ffc41d",
+      "",
+      "",0
+    ));
+    tmpUebungs.add(Uebung(
+      "Beincurls",
+      beincurlsB,
+      'exercises/beincurls.gif',
+      "#ffc41d",
+      "",
+      "",0
+    ));
+    tmpUebungs.add(Uebung(
+      "Scottcurls am Gerät",
+      szCurlsB,
+      'exercises/scottcurls_maschine.jpg',
+      "#a7eb7b",
+      "",
+      "",0
+    ));
+    tmpUebungs.add(Uebung(
+      "Trizepsdrücken am Kabel",
+      trizepsdrueckenamKabelB,
+      'exercises/trizepsdrückenamKabel.png',
+      "#68d9f3",
+      "",
+      "",0
+    ));
+    tmpUebungs.add(Uebung(
+      "Bauchmaschine",
+      crunchB,
+      'exercises/crunsh.jpeg',
+      "#00718f",
+      "",
+      "",0
+    ));
+    return tmpUebungs;
   }
 }

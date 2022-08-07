@@ -20,21 +20,9 @@ class _TrainingsPlanEditorState extends State<TrainingsPlanEditor> {
       body: ListView.builder(
         itemCount: widget.trainingPlan.exercises.length,
         itemBuilder: (context, index) {
-          int selectedNumber = widget.trainingPlan.exercises[index].reps;
           return Card(
             child: Row(
               children: [
-                NumberPicker(
-                    minValue: 0,
-                    maxValue: 10,
-                    step: 1,
-                    value: selectedNumber,
-                    onChanged: (i) {
-                      setState(() {
-                        widget.trainingPlan.exercises[index].reps = i;
-                        selectedNumber = i;
-                      });
-                    }),
                 Text(widget.trainingPlan.exercises[index].name),
                 IconButton(
                     onPressed: () {
@@ -50,4 +38,5 @@ class _TrainingsPlanEditorState extends State<TrainingsPlanEditor> {
       ),
     );
   }
+
 }

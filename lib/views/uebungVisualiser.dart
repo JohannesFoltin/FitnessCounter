@@ -29,7 +29,7 @@ class _UebungVisualiserState extends State<UebungVisualiser> {
         .trainings
         .forEach((element) {
       element.uebungErgebnisse.forEach((e) {
-        if (e.name == widget.uebung.name) {
+        if (e.uebung.name == widget.uebung.name) {
           tmp.add(e);
         }
       });
@@ -44,7 +44,7 @@ class _UebungVisualiserState extends State<UebungVisualiser> {
       return "Bis jetzt noch nicht absolviert. ERROR";
     }
     lastTrainingsUebungsResults.forEach((element) {
-      element.repetitions.forEach((e) {
+      element.sets.forEach((e) {
         if (e.wert > max) {
           max = e.wert;
         }
@@ -59,7 +59,7 @@ class _UebungVisualiserState extends State<UebungVisualiser> {
       return "Bis jetzt noch nicht absolviert. ERROR";
     }
     lastTrainingsUebungsResults.forEach((element) {
-      element.repetitions.forEach((e) {
+      element.sets.forEach((e) {
         if (e.wert < min && e.wert != 0) {
           min = e.wert;
         }
@@ -74,8 +74,8 @@ class _UebungVisualiserState extends State<UebungVisualiser> {
     }
     String tmp = "";
     UebungsErgebniss uTmp = lastTrainingsUebungsResults.last;
-    for (var i = 0; i < uTmp.repetitions.length; i++) {
-      tmp = tmp + uTmp.repetitions[i].wert.toString() + "kg, ";
+    for (var i = 0; i < uTmp.sets.length; i++) {
+      tmp = tmp + uTmp.sets[i].wert.toString() + "kg, ";
     }
     return tmp;
   }

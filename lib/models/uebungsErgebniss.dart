@@ -8,11 +8,11 @@ part 'uebungsErgebniss.g.dart';
 
 @JsonSerializable()
 class UebungsErgebniss {
-  String name;
-  int dauer;
-  List<Rep> repetitions;
+  Uebung uebung;
+  List<Set> sets;
+  bool isChecked;
 
-  UebungsErgebniss(this.name, this.repetitions, this.dauer);
+  UebungsErgebniss(this.uebung, this.sets,this.isChecked);
   factory UebungsErgebniss.fromJson(Map<String, dynamic> json) =>
       _$UebungsErgebnissFromJson(json);
 

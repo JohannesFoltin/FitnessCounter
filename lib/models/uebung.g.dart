@@ -10,10 +10,10 @@ Uebung _$UebungFromJson(Map<String, dynamic> json) => Uebung(
       json['name'] as String,
       json['beschreibung'] as String,
       json['pictureAsset'] as String,
-      json['color'] as String,
+      json['typ'] as String,
       json['notizen'] as String,
       json['einheit'] as String,
-      json['reps'] as int,
+      json['maximum'] as int,
     );
 
 Map<String, dynamic> _$UebungToJson(Uebung instance) => <String, dynamic>{
@@ -21,7 +21,7 @@ Map<String, dynamic> _$UebungToJson(Uebung instance) => <String, dynamic>{
       'beschreibung': instance.beschreibung,
       'pictureAsset': instance.pictureAsset,
       'notizen': instance.notizen,
-      'reps': instance.reps,
       'einheit': instance.einheit,
-      'color': instance.color,
+      'typ': instance.typ,
+      'maximum': instance.maximum,
     };

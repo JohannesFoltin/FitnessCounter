@@ -11,12 +11,12 @@ class Uebung {
   String beschreibung;
   String pictureAsset;
   String notizen;
-  int reps;
   String einheit;
-  String color;
+  String typ;
+  int maximum;
 
-  Uebung(this.name, this.beschreibung, this.pictureAsset, this.color,
-      this.notizen, this.einheit, this.reps);
+  Uebung(this.name, this.beschreibung, this.pictureAsset, this.typ,
+      this.notizen, this.einheit,this.maximum);
   setNotizen(String notiz) {
     this.notizen = notiz;
   }

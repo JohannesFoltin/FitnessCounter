@@ -12,7 +12,7 @@ import '../controller/controller.dart';
 class OnFitness extends StatefulWidget {
   OnFitness({Key? key, required this.trainingPlan}) : super(key: key);
 
-  final TrainingPlan trainingPlan;
+  final TrainingPlan? trainingPlan;
 
   @override
   _OnFitness createState() => _OnFitness();
@@ -33,21 +33,22 @@ class OnFitness extends StatefulWidget {
 class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   bool run = true;
   Stopwatch _stopwatch = new Stopwatch();
-  late List<UebungItem> uebungenLeft;
   late Training training;
   Color buttonColor = Colors.orange;
   late TimerController _countDownController;
   late final DateTime dateCode;
+  int uebungenlength = 0;
+  bool isChecked = false;
+  List<UebungsErgebniss> uebungenList = [];
 
   @override
   void initState() {
     _countDownController = TimerController(this);
     _stopwatch.start();
     dateCode = DateTime.now();
-    training = new Training(0, dateCode, widget.trainingPlan.name,[]);
-    uebungenLeft =
-        widget.trainingPlan.exercises.map((u) => new UebungItem(u)).toList();
-    print("I listed");
+    training = new Training(0, dateCode, []);
+    //TODO check for Trainingsplan and modifiy uebungenlength
+    print("init");
     super.initState();
   }
 
@@ -63,101 +64,207 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
               Container(
                 padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    Column(
-                      children: [
-                        Text("Zeit in der Übung"),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: Container(
-                              height: 150,
-                              width: 150,
-                              color: buttonColor,
-                              child: _buildTimeController(context)),
-                        ),
-                      ],
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        children: [
+                          Text("Zeit in der Übung"),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Container(
+                                height: 50,
+                                color: buttonColor,
+                                child: TextButton(
+                                  onPressed: () => {
+                                    setState(() {
+                                      handleStartStop();
+                                      if (buttonColor == Colors.orange) {
+                                        buttonColor =
+                                            HexColor.fromHex("#008060");
+                                      } else {
+                                        buttonColor = Colors.orange;
+                                      }
+                                    })
+                                  },
+                                  onLongPress: () => {
+                                    showDialog<String>(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            AlertDialog(
+                                              actionsAlignment:
+                                                  MainAxisAlignment.center,
+                                              title: const Text(
+                                                  'Willst du das Training wirklich abbrechen?'),
+                                              content: const Text(
+                                                  'Alles geht verloren...'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () => {
+                                                    Navigator.pop(context),
+                                                    Navigator.pop(context)
+                                                  },
+                                                  child: const Text('OK'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                          context, 'Cancel'),
+                                                  child: const Text('Cancel'),
+                                                ),
+                                              ],
+                                            )),
+                                  },
+                                  child: TimerField(_stopwatch, true),
+                                )),
+                          ),
+                        ],
+                      ),
                     ),
-                    Column(
-                      children: [
-                        Text("Pause Timer"),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: _buildCountdown(),
-                        ),
-                      ],
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        children: [
+                          Text("Pause Timer"),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Container(
+                                height: 50,
+                                color: Colors.red,
+                                child: TextButton(
+                                  onPressed: () => {
+                                    if (_countDownController.isAnimating)
+                                      {_countDownController.stop()}
+                                    else
+                                      {_countDownController.start()}
+                                  },
+                                  onLongPress: () =>
+                                      {_countDownController.reset()},
+                                  child: SimpleTimer(
+                                    controller: _countDownController,
+                                    progressTextStyle: TextStyle(
+                                        fontSize: 18, color: Colors.black),
+                                    displayProgressIndicator: false,
+                                    duration: Duration(minutes: 1, seconds: 30),
+                                    progressTextCountDirection:
+                                        TimerProgressTextCountDirection
+                                            .count_down,
+                                    onEnd: () => {_countDownController.reset()},
+                                  ),
+                                )),
+                          ),
+                        ],
+                      ),
                     )
                   ],
                 ),
               ),
-              Expanded(child: _buildUebungenList()),
+              Expanded(
+                  child: /* _buildUebungenList() */ ListView.builder(
+                      itemCount: uebungenList.length,
+                      itemBuilder: (context, indexCard) {
+                        UebungsErgebniss uebungsErgebniss =
+                            uebungenList[indexCard];
+                        Uebung uebung = uebungsErgebniss.uebung;
+                        return Card(
+                          //TODO Color
+                          // color: HexColor.fromHex(uebung.color),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  TextButton(
+                                    onPressed: () => {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: ((context) =>
+                                                  UebungVisualiser(
+                                                    uebung: uebung,
+                                                  ))))
+                                    },
+                                    style: TextButton.styleFrom(
+                                      alignment: Alignment.centerLeft,
+                                      primary: Colors.black,
+                                      textStyle: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    child: Text(
+                                      uebung.name,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Checkbox(
+                                      value: uebungsErgebniss.isChecked,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          uebungsErgebniss.isChecked =
+                                              !uebungsErgebniss.isChecked;
+                                        });
+                                      })
+                                ],
+                              ),
+                              ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: uebungsErgebniss.sets.length,
+                                  itemBuilder: (context, indexSet) {
+                                    Set set = uebungsErgebniss.sets[indexSet];
+                                    return (indexSet !=
+                                                uebungsErgebniss.sets.length -
+                                                    1) &&
+                                            (uebungsErgebniss.sets.length != 0)
+                                        ? Row(
+                                            children: [],
+                                          )
+                                        : Row(
+                                            children: [
+                                              Text("Set" +
+                                                  (indexSet + 1).toString()),
+                                              Text(set.repitions.toString() +
+                                                  "x"),
+                                              Text(set.wert.toString() +
+                                                  uebung.einheit)
+                                            ],
+                                          );
+                                  }),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                      onPressed: () {}, icon: Icon(Icons.add)),
+                                  uebungsErgebniss.sets.length == 0
+                                      ? SizedBox.shrink()
+                                      : IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(Icons.delete)),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      })),
+              Center(
+                child: IconButton(
+                    onPressed: () {
+                      uebungenList.add(UebungsErgebniss(
+                          Provider.of<AppDataController>(context, listen: false)
+                              .appData
+                              .uebungs
+                              .first,
+                          [],
+                          false));
+                      setState(() {});
+                    },
+                    icon: Icon(Icons.add)),
+              )
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Container _buildCountdown() {
-    return Container(
-        height: 100,
-        width: 100,
-        color: Colors.red,
-        child: TextButton(
-          onPressed: () => {
-            if (_countDownController.isAnimating)
-              {_countDownController.stop()}
-            else
-              {_countDownController.start()}
-          },
-          onLongPress: () => {_countDownController.reset()},
-          child: SimpleTimer(
-            controller: _countDownController,
-            progressTextStyle: TextStyle(fontSize: 18, color: Colors.black),
-            displayProgressIndicator: false,
-            duration: Duration(minutes: 1, seconds: 30),
-            progressTextCountDirection:
-                TimerProgressTextCountDirection.count_down,
-            onEnd: () => {_countDownController.reset()},
-          ),
-        ));
-  }
-
-  TextButton _buildTimeController(BuildContext context) {
-    return TextButton(
-      onPressed: () => {
-        setState(() {
-          handleStartStop();
-          if (buttonColor == Colors.orange) {
-            buttonColor = HexColor.fromHex("#008060");
-          } else {
-            buttonColor = Colors.orange;
-          }
-        })
-      },
-      onLongPress: () => {
-        showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-                  actionsAlignment: MainAxisAlignment.center,
-                  title:
-                      const Text('Willst du das Training wirklich abbrechen?'),
-                  content: const Text('Alles geht verloren...'),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () =>
-                          {Navigator.pop(context), Navigator.pop(context)},
-                      child: const Text('OK'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, 'Cancel'),
-                      child: const Text('Cancel'),
-                    ),
-                  ],
-                )),
-      },
-      child: TimerField(_stopwatch, true),
     );
   }
 
@@ -166,6 +273,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
       backgroundColor: HexColor.fromHex("#006666"),
       automaticallyImplyLeading: false,
       title: Text("Training am " +
+          // TODO Formatierung
           DateTime.now().day.toString() +
           "." +
           DateTime.now().month.toString() +
@@ -200,33 +308,12 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
             ));
   }
 
-  ListView _buildUebungenList() {
-    return ListView.builder(
-        itemCount: uebungenLeft.length,
-        itemBuilder: (context, index) {
-          final item = uebungenLeft[index];
-          return item.buildCard(context, removeItem);
-        });
-  }
-
   void tot(Training training) {
     training.dauer = _stopwatch.elapsedMilliseconds;
     Provider.of<AppDataController>(context, listen: false)
         .addTraining(training);
     Provider.of<AppDataController>(context, listen: false).saveAppData();
     Navigator.pop(context);
-  }
-
-  void removeItem(UebungItem c) {
-    setState(() {
-      uebungenLeft.remove(c);
-      UebungsErgebniss uebungsErgebniss =
-          new UebungsErgebniss(c.uebung.name, c.reps, 0);
-      training.uebungErgebnisse.add(uebungsErgebniss);
-    });
-    if (uebungenLeft.isEmpty) {
-      _showFinishDialog();
-    }
   }
 
   void handleStartStop() {
@@ -237,150 +324,6 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
       _stopwatch.start();
       run = !run;
     }
-  }
-}
-
-abstract class ListItem {
-  Widget buildCard(BuildContext context, Function r);
-}
-
-class UebungItem implements ListItem {
-  Uebung uebung;
-  late int remainingreps;
-  List<Rep> reps = [];
-
-  TextEditingController lastValueCont = new TextEditingController();
-  TextEditingController notizenCont = new TextEditingController();
-
-  UebungItem(this.uebung) {
-    remainingreps = uebung.reps;
-    notizenCont.text = uebung.notizen;
-  }
-
-  @override
-  Widget buildCard(BuildContext context, Function r) {
-    lastValueCont.selection = TextSelection.fromPosition(
-        TextPosition(offset: lastValueCont.text.length));
-    notizenCont.selection = TextSelection.fromPosition(
-        TextPosition(offset: notizenCont.text.length));
-    return StatefulBuilder(builder:
-        (BuildContext context, void Function(void Function()) setState) {
-      return Container(
-        margin: const EdgeInsets.fromLTRB(10.0, 2.5, 10.0, 2.5),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: Container(
-            color: HexColor.fromHex(uebung.color),
-            height: 50,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Flexible(
-                  child: Text(" x" + remainingreps.toString()),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: TextButton(
-                    onPressed: () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) => UebungVisualiser(
-                                    uebung: uebung,
-                                  ))))
-                    },
-                    style: TextButton.styleFrom(
-                      alignment: Alignment.centerLeft,
-                      primary: Colors.black,
-                      textStyle:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    child: Text(
-                      uebung.name,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-                Expanded(
-                    child: SizedBox(
-                  height: 25,
-                  child: TextField(
-                    controller: lastValueCont,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
-                )),
-                Flexible(
-                    child: ElevatedButton(
-                  onPressed: () => {
-                    if (lastValueCont.text == "")
-                      {print("Error. No lastValueCont text")},
-                    setState(() {
-                      remainingreps--;
-                    }),
-                    reps.add(new Rep(int.parse(lastValueCont.text))),
-                    lastValueCont.clear(),
-                    if (remainingreps == 0) {r(this)}
-                  },
-                  onLongPress: () => {
-                    if (lastValueCont.text == "")
-                      {print("Error. No lastValueCont text")}
-                    else
-                      {
-                        for (int i = 0; i < remainingreps; i++)
-                          {
-                            reps.add(new Rep(int.parse(lastValueCont.text))),
-                          },
-                        remainingreps = 0,
-                        r(this),
-                      }
-                  },
-                  child: Icon(Icons.check),
-                )),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
-  }
-
-  Container notizenContainer(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Text("Notizen"),
-          TextField(
-            controller: notizenCont,
-            minLines: 5,
-            maxLines: null,
-            keyboardType: TextInputType.multiline,
-            decoration: new InputDecoration(
-              enabledBorder: const OutlineInputBorder(),
-            ),
-          ),
-          Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => {
-                    //noteBuffer = notizenCont.text,
-                    uebung.notizen = notizenCont.text,
-                    FocusScope.of(context).unfocus()
-                  },
-                  child: Text("Speichern"),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

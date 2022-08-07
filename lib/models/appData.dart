@@ -6,7 +6,8 @@ import 'package:json_annotation/json_annotation.dart';
 /// the star denotes the source file name.
 part 'appData.g.dart';
 
-// Falls Probleme: run command: flutter pub run build_runner build
+// Falls Probleme: run command: 
+//flutter pub run build_runner build
 // Wenn nicht dann: flutter pub run build_runner watch
 
 /*
@@ -16,15 +17,15 @@ Map<String, dynamic> toJson() => _$AppDataToJson(this);
  */
 
 @JsonSerializable()
-class AppData{
-
-  List<TrainingPlan> trainingsPlans;
+class AppData {
   List<Training> trainings;
+  List<Uebung> uebungs;
+  List<TrainingPlan> trainingsPlans;
 
-  AppData(this.trainingsPlans,this.trainings);
+  AppData(this.trainings, this.trainingsPlans,this.uebungs);
 
-
-  factory AppData.fromJson(Map<String, dynamic> json) => _$AppDataFromJson(json);
+  factory AppData.fromJson(Map<String, dynamic> json) =>
+      _$AppDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$AppDataToJson(this);
 }

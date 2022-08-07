@@ -8,16 +8,16 @@ part of 'uebungsErgebniss.dart';
 
 UebungsErgebniss _$UebungsErgebnissFromJson(Map<String, dynamic> json) =>
     UebungsErgebniss(
-      json['name'] as String,
-      (json['repetitions'] as List<dynamic>)
-          .map((e) => Rep.fromJson(e as Map<String, dynamic>))
+      Uebung.fromJson(json['uebung'] as Map<String, dynamic>),
+      (json['sets'] as List<dynamic>)
+          .map((e) => Set.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['dauer'] as int,
+      json['isChecked'] as bool,
     );
 
 Map<String, dynamic> _$UebungsErgebnissToJson(UebungsErgebniss instance) =>
     <String, dynamic>{
-      'name': instance.name,
-      'dauer': instance.dauer,
-      'repetitions': instance.repetitions,
+      'uebung': instance.uebung,
+      'sets': instance.sets,
+      'isChecked': instance.isChecked,
     };

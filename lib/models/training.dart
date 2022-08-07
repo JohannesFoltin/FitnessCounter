@@ -10,10 +10,9 @@ part 'training.g.dart';
 class Training {
   int dauer;
   DateTime date;
-  String name;
   List<UebungsErgebniss> uebungErgebnisse;
 
-  Training(this.dauer, this.date, this.name, this.uebungErgebnisse);
+  Training(this.dauer, this.date, this.uebungErgebnisse);
 
   factory Training.fromJson(Map<String, dynamic> json) =>
       _$TrainingFromJson(json);
