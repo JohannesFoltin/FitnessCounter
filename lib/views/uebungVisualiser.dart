@@ -14,70 +14,30 @@ class UebungVisualiser extends StatefulWidget {
 
 class _UebungVisualiserState extends State<UebungVisualiser> {
   TextEditingController notizenCont = new TextEditingController();
-  List<UebungsErgebniss> lastTrainingsUebungsResults = [];
   @override
   void initState() {
     notizenCont.text = widget.uebung.notizen;
-    lastTrainingsUebungsResults = getUebungsErgebnisse(context);
     super.initState();
   }
 
-  List<UebungsErgebniss> getUebungsErgebnisse(BuildContext context) {
-    List<UebungsErgebniss> tmp = [];
-    Provider.of<AppDataController>(context, listen: false)
-        .appData
-        .trainings
-        .forEach((element) {
-      element.uebungErgebnisse.forEach((e) {
-        if (e.uebung.name == widget.uebung.name) {
-          tmp.add(e);
-        }
-      });
-    });
-    print(tmp.length.toString());
-    return tmp;
-  }
-
-  String getMax() {
-    int max = 0;
-    if (lastTrainingsUebungsResults.isEmpty) {
-      return "Bis jetzt noch nicht absolviert. ERROR";
-    }
-    lastTrainingsUebungsResults.forEach((element) {
-      element.sets.forEach((e) {
-        if (e.wert > max) {
-          max = e.wert;
-        }
-      });
-    });
-    return max.toString();
-  }
-
-  String getMin() {
-    int min = 99999999;
-    if (lastTrainingsUebungsResults.isEmpty) {
-      return "Bis jetzt noch nicht absolviert. ERROR";
-    }
-    lastTrainingsUebungsResults.forEach((element) {
-      element.sets.forEach((e) {
-        if (e.wert < min && e.wert != 0) {
-          min = e.wert;
-        }
-      });
-    });
-    return min.toString();
-  }
-
   String lastTraing() {
-    if (lastTrainingsUebungsResults.isEmpty) {
-      return "Bis jetzt noch nicht absolviert. ERROR";
+    var appData =
+        Provider.of<AppDataController>(context, listen: false).appData;
+    if (!appData.trainings.any((element) => element.uebungErgebnisse
+        .any((element) => element.uebung == widget.uebung))) {
+      return "Noch nicht absolviert";
+    } else {
+      String tmp = "";
+      Training uTraining = appData.trainings.lastWhere((element) => element
+          .uebungErgebnisse
+          .any((element) => element.uebung == widget.uebung));
+      UebungsErgebniss uTmp = uTraining.uebungErgebnisse
+          .firstWhere((element) => element.uebung == widget.uebung);
+      for (var i = 0; i < uTmp.sets.length; i++) {
+        tmp = tmp + uTmp.sets[i].wert.toString() + "kg, ";
+      }
+      return tmp;
     }
-    String tmp = "";
-    UebungsErgebniss uTmp = lastTrainingsUebungsResults.last;
-    for (var i = 0; i < uTmp.sets.length; i++) {
-      tmp = tmp + uTmp.sets[i].wert.toString() + "kg, ";
-    }
-    return tmp;
   }
 
   @override
@@ -117,8 +77,9 @@ class _UebungVisualiserState extends State<UebungVisualiser> {
                           SizedBox(
                             height: 5,
                           ),
-                          Text(" Max: " + getMax() + "kg"),
-                          Text(" Min: " + getMin() + "kg"),
+                          Text(" Max: " +
+                              widget.uebung.maximum.toString() +
+                              "kg"),
                           Text(" Beim letzten Training: " + lastTraing()),
                           SizedBox(
                             height: 5,

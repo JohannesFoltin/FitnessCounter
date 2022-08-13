@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:fitness_f/views/main.dart';
+import 'package:fitness_f/views/uebungSelector.dart';
 import 'package:fitness_f/views/uebungVisualiser.dart';
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_timer/simple_timer.dart';
 
@@ -37,9 +39,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
   Color buttonColor = Colors.orange;
   late TimerController _countDownController;
   late final DateTime dateCode;
-  int uebungenlength = 0;
-  bool isChecked = false;
-  List<UebungsErgebniss> uebungenList = [];
+  late List<UebungsErgebniss> uebungenList = training.uebungErgebnisse;
 
   @override
   void initState() {
@@ -161,15 +161,13 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                 ),
               ),
               Expanded(
-                  child: /* _buildUebungenList() */ ListView.builder(
+                  child: ListView.builder(
                       itemCount: uebungenList.length,
                       itemBuilder: (context, indexCard) {
                         UebungsErgebniss uebungsErgebniss =
                             uebungenList[indexCard];
                         Uebung uebung = uebungsErgebniss.uebung;
                         return Card(
-                          //TODO Color
-                          // color: HexColor.fromHex(uebung.color),
                           child: Column(
                             children: [
                               Row(
@@ -193,6 +191,11 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                     ),
+                                    onLongPress: () {
+                                      setState(() {
+                                        uebungenList.remove(uebungsErgebniss);
+                                      });
+                                    },
                                     child: Text(
                                       uebung.name,
                                       overflow: TextOverflow.ellipsis,
@@ -208,58 +211,118 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                                       })
                                 ],
                               ),
-                              ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: uebungsErgebniss.sets.length,
-                                  itemBuilder: (context, indexSet) {
-                                    Set set = uebungsErgebniss.sets[indexSet];
-                                    return (indexSet !=
-                                                uebungsErgebniss.sets.length -
-                                                    1) &&
-                                            (uebungsErgebniss.sets.length != 0)
-                                        ? Row(
-                                            children: [],
-                                          )
-                                        : Row(
-                                            children: [
-                                              Text("Set" +
-                                                  (indexSet + 1).toString()),
-                                              Text(set.repitions.toString() +
-                                                  "x"),
-                                              Text(set.wert.toString() +
-                                                  uebung.einheit)
-                                            ],
-                                          );
-                                  }),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                      onPressed: () {}, icon: Icon(Icons.add)),
-                                  uebungsErgebniss.sets.length == 0
-                                      ? SizedBox.shrink()
-                                      : IconButton(
-                                          onPressed: () {},
-                                          icon: Icon(Icons.delete)),
-                                ],
-                              )
+                              uebungsErgebniss.isChecked
+                                  ? SizedBox.shrink()
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: uebungsErgebniss.sets.length,
+                                      itemBuilder: (context, indexSet) {
+                                        Set set =
+                                            uebungsErgebniss.sets[indexSet];
+                                        return (indexSet !=
+                                                    uebungsErgebniss
+                                                            .sets.length -
+                                                        1) &&
+                                                (uebungsErgebniss.sets.length !=
+                                                    0)
+                                            ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  //nicht das letzte set
+                                                  Text("Set " +
+                                                      (indexSet + 1)
+                                                          .toString() +
+                                                      ": "),
+                                                  Text(
+                                                      set.repitions.toString() +
+                                                          "x "),
+                                                  Text(set.wert.toString() +
+                                                      "kg")
+                                                ],
+                                              )
+                                            : Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  //das letzte Set, welches man bearbeiten möchte
+                                                  Text("Set " +
+                                                      (indexSet + 1)
+                                                          .toString() +
+                                                      ":"),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        _showSelectionDialog(
+                                                                set.repitions,
+                                                                50)
+                                                            .then((value) {
+                                                          setState(() {
+                                                            if (value == null) {
+                                                            } else {
+                                                              set.repitions =
+                                                                  value;
+                                                            }
+                                                          });
+                                                        });
+                                                      },
+                                                      child: Text(set.repitions
+                                                              .toString() +
+                                                          "x ")),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        _showSelectionDialog(
+                                                                set.wert, 200)
+                                                            .then((value) {
+                                                          if (value != null) {
+                                                            setState(() {
+                                                              set.wert = value;
+                                                            });
+                                                          }
+                                                        });
+                                                      },
+                                                      child: Text(
+                                                          set.wert.toString() +
+                                                              "kg"))
+                                                ],
+                                              );
+                                      }),
+                              uebungsErgebniss.isChecked
+                                  ? SizedBox.shrink()
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                uebungsErgebniss.sets
+                                                    .add(Set(20, 10));
+                                              });
+                                            },
+                                            icon: Icon(Icons.add)),
+                                        uebungsErgebniss.sets.length == 0
+                                            ? SizedBox.shrink()
+                                            : IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    uebungsErgebniss.sets
+                                                        .removeLast();
+                                                  });
+                                                },
+                                                icon: Icon(Icons.delete)),
+                                      ],
+                                    )
                             ],
                           ),
                         );
                       })),
               Center(
-                child: IconButton(
+                child: ElevatedButton(
                     onPressed: () {
-                      uebungenList.add(UebungsErgebniss(
-                          Provider.of<AppDataController>(context, listen: false)
-                              .appData
-                              .uebungs
-                              .first,
-                          [],
-                          false));
-                      setState(() {});
+                      _navigateAndDisplaySelection(context);
                     },
-                    icon: Icon(Icons.add)),
+                    child: Icon(Icons.add)),
               )
             ],
           ),
@@ -289,6 +352,35 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
     );
   }
 
+  Future<int?> _showSelectionDialog(int startNumber, int endnumber) {
+    int currentValue = startNumber;
+    return showDialog<int>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              actionsAlignment: MainAxisAlignment.center,
+              title: Center(child: const Text('Wähle')),
+              content: StatefulBuilder(builder: (context, setState) {
+                return NumberPicker(
+                    minValue: 0,
+                    maxValue: endnumber,
+                    value: currentValue,
+                    onChanged: (value) => setState(() {
+                          currentValue = value;
+                        }));
+              }),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => {Navigator.pop(context, currentValue)},
+                  child: const Text('OK'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+              ],
+            ));
+  }
+
   Future<String?> _showFinishDialog() {
     return showDialog<String>(
         context: context,
@@ -308,12 +400,59 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
             ));
   }
 
+  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+    // Navigator.push returns a Future that completes after calling
+    // Navigator.pop on the Selection Screen.
+    Uebung? result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UebungSelector()),
+    );
+
+    // When a BuildContext is used from a StatefulWidget, the mounted property
+    // must be checked after an asynchronous gap.
+    if (!mounted) return;
+    if (result == null) return;
+    // After the Selection Screen returns a result, hide any previous snackbars
+    // and show the new result.
+    bool tmp = false;
+    uebungenList.forEach((element) {
+      if (element.uebung == result) {
+        tmp = true;
+      }
+    });
+    if (tmp == false) {
+      setState(() {
+        uebungenList.insert(0, UebungsErgebniss(result, [], false));
+      });
+    }
+  }
+
+  void checkMaxFromUebungen() {
+    uebungenList.forEach((element) {
+      element.sets.forEach((elementSet) {
+        if (elementSet.wert > element.uebung.maximum) {
+          element.uebung.maximum = elementSet.wert;
+        }
+      });
+    });
+  }
+
   void tot(Training training) {
-    training.dauer = _stopwatch.elapsedMilliseconds;
-    Provider.of<AppDataController>(context, listen: false)
-        .addTraining(training);
-    Provider.of<AppDataController>(context, listen: false).saveAppData();
-    Navigator.pop(context);
+    bool tmp = uebungenList.every((element) => element.isChecked == true);
+    if (tmp == false) {
+      var snackBar = SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text("Es sind noch nicht alle Übungen fertig!"));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      checkMaxFromUebungen();
+      training.dauer = _stopwatch.elapsedMilliseconds;
+      print(training.uebungErgebnisse.length);
+      Provider.of<AppDataController>(context, listen: false)
+          .addTraining(training);
+      Provider.of<AppDataController>(context, listen: false).saveAppData();
+      Navigator.pop(context);
+    }
   }
 
   void handleStartStop() {
