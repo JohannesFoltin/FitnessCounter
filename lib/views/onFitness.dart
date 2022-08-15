@@ -61,16 +61,15 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
         body: SafeArea(
           child: Column(
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      flex: 2,
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                       child: Column(
                         children: [
-                          Text("Zeit in der Übung"),
+                          Text("Zeit im Training"),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
                             child: Container(
@@ -116,14 +115,18 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                                               ],
                                             )),
                                   },
-                                  child: TimerField(_stopwatch, true),
+                                  child: Center(
+                                      child: TimerField(_stopwatch, true)),
                                 )),
                           ),
                         ],
                       ),
                     ),
-                    Expanded(
-                      flex: 1,
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                       child: Column(
                         children: [
                           Text("Pause Timer"),
@@ -143,8 +146,8 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                                       {_countDownController.reset()},
                                   child: SimpleTimer(
                                     controller: _countDownController,
-                                    progressTextStyle: TextStyle(
-                                        fontSize: 18, color: Colors.black),
+                                    progressTextStyle:
+                                        TextStyle(color: Colors.black),
                                     displayProgressIndicator: false,
                                     duration: Duration(minutes: 1, seconds: 30),
                                     progressTextCountDirection:
@@ -156,9 +159,9 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                           ),
                         ],
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
               Expanded(
                   child: ListView.builder(
@@ -167,153 +170,204 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                         UebungsErgebniss uebungsErgebniss =
                             uebungenList[indexCard];
                         Uebung uebung = uebungsErgebniss.uebung;
-                        return Card(
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  TextButton(
-                                    onPressed: () => {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: ((context) =>
-                                                  UebungVisualiser(
-                                                    uebung: uebung,
-                                                  ))))
-                                    },
-                                    style: TextButton.styleFrom(
-                                      alignment: Alignment.centerLeft,
-                                      primary: Colors.black,
-                                      textStyle: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
+                        return Container(
+                          padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                          child: Card(
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: Center(
+                                        child: TextButton(
+                                          onPressed: uebungsErgebniss.isChecked
+                                              ? () {}
+                                              : () => {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: ((context) =>
+                                                                UebungVisualiser(
+                                                                  uebung:
+                                                                      uebung,
+                                                                ))))
+                                                  },
+                                          style: TextButton.styleFrom(
+                                            alignment: Alignment.centerLeft,
+                                            primary: uebungsErgebniss.isChecked
+                                                ? Colors.grey
+                                                : Colors.black,
+                                            textStyle: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          onLongPress: () {
+                                            setState(() {
+                                              uebungenList
+                                                  .remove(uebungsErgebniss);
+                                            });
+                                          },
+                                          child: Text(
+                                            uebung.name,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                    onLongPress: () {
-                                      setState(() {
-                                        uebungenList.remove(uebungsErgebniss);
-                                      });
-                                    },
-                                    child: Text(
-                                      uebung.name,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Checkbox(
-                                      value: uebungsErgebniss.isChecked,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          uebungsErgebniss.isChecked =
-                                              !uebungsErgebniss.isChecked;
-                                        });
-                                      })
-                                ],
-                              ),
-                              uebungsErgebniss.isChecked
-                                  ? SizedBox.shrink()
-                                  : ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: uebungsErgebniss.sets.length,
-                                      itemBuilder: (context, indexSet) {
-                                        Set set =
-                                            uebungsErgebniss.sets[indexSet];
-                                        return (indexSet !=
-                                                    uebungsErgebniss
-                                                            .sets.length -
-                                                        1) &&
-                                                (uebungsErgebniss.sets.length !=
-                                                    0)
-                                            ? Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  //nicht das letzte set
-                                                  Text("Set " +
-                                                      (indexSet + 1)
-                                                          .toString() +
-                                                      ": "),
-                                                  Text(
-                                                      set.repitions.toString() +
-                                                          "x "),
-                                                  Text(set.wert.toString() +
-                                                      "kg")
-                                                ],
-                                              )
-                                            : Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  //das letzte Set, welches man bearbeiten möchte
-                                                  Text("Set " +
-                                                      (indexSet + 1)
-                                                          .toString() +
-                                                      ":"),
-                                                  TextButton(
-                                                      onPressed: () {
-                                                        _showSelectionDialog(
-                                                                set.repitions,
-                                                                50)
-                                                            .then((value) {
-                                                          setState(() {
-                                                            if (value == null) {
-                                                            } else {
-                                                              set.repitions =
-                                                                  value;
-                                                            }
-                                                          });
-                                                        });
-                                                      },
-                                                      child: Text(set.repitions
-                                                              .toString() +
-                                                          "x ")),
-                                                  TextButton(
-                                                      onPressed: () {
-                                                        _showSelectionDialog(
-                                                                set.wert, 200)
-                                                            .then((value) {
-                                                          if (value != null) {
-                                                            setState(() {
-                                                              set.wert = value;
-                                                            });
-                                                          }
-                                                        });
-                                                      },
-                                                      child: Text(
-                                                          set.wert.toString() +
-                                                              "kg"))
-                                                ],
-                                              );
-                                      }),
-                              uebungsErgebniss.isChecked
-                                  ? SizedBox.shrink()
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                uebungsErgebniss.sets
-                                                    .add(Set(20, 10));
-                                              });
-                                            },
-                                            icon: Icon(Icons.add)),
-                                        uebungsErgebniss.sets.length == 0
-                                            ? SizedBox.shrink()
-                                            : IconButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    uebungsErgebniss.sets
-                                                        .removeLast();
-                                                  });
-                                                },
-                                                icon: Icon(Icons.delete)),
-                                      ],
+                                    Expanded(
+                                      flex: 1,
+                                      child: Checkbox(
+                                          value: uebungsErgebniss.isChecked,
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              if (uebungsErgebniss
+                                                      .sets.length ==
+                                                  0) {
+                                                _showSnackBar(
+                                                    "Vielleicht willst du erstmal ein paar Sets hinzufügen?");
+                                              } else {
+                                                uebungsErgebniss.isChecked =
+                                                    !uebungsErgebniss.isChecked;
+                                              }
+                                            });
+                                          }),
                                     )
-                            ],
+                                  ],
+                                ),
+                                uebungsErgebniss.isChecked
+                                    ? SizedBox.shrink()
+                                    : ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: uebungsErgebniss.sets.length,
+                                        itemBuilder: (context, indexSet) {
+                                          Set set =
+                                              uebungsErgebniss.sets[indexSet];
+                                          return (indexSet !=
+                                                      uebungsErgebniss
+                                                              .sets.length -
+                                                          1) &&
+                                                  (uebungsErgebniss
+                                                          .sets.length !=
+                                                      0)
+                                              ? Container(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      0, 2.5, 0, 2.5),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      //nicht das letzte set
+                                                      Text("Set " +
+                                                          (indexSet + 1)
+                                                              .toString() +
+                                                          ": "),
+                                                      Text(set.repitions
+                                                              .toString() +
+                                                          "x "),
+                                                      Text(set.wert.toString() +
+                                                          "kg")
+                                                    ],
+                                                  ),
+                                                )
+                                              : Column(
+                                                  children: [
+                                                    Divider(),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        //das letzte Set, welches man bearbeiten möchte
+                                                        Text("Set " +
+                                                            (indexSet + 1)
+                                                                .toString() +
+                                                            ": "),
+                                                        GestureDetector(
+                                                            onTap: () {
+                                                              _showSelectionDialog(
+                                                                      set.repitions,
+                                                                      50)
+                                                                  .then((value) {
+                                                                setState(() {
+                                                                  if (value ==
+                                                                      null) {
+                                                                  } else {
+                                                                    set.repitions =
+                                                                        value;
+                                                                  }
+                                                                });
+                                                              });
+                                                            },
+                                                            child: Text(
+                                                              set.repitions
+                                                                      .toString() +
+                                                                  "x ",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .purple,
+                                                                  fontSize: 16),
+                                                            )),
+                                                        GestureDetector(
+                                                            onTap: () {
+                                                              _showSelectionDialog(
+                                                                      set.wert,
+                                                                      200)
+                                                                  .then(
+                                                                      (value) {
+                                                                if (value !=
+                                                                    null) {
+                                                                  setState(() {
+                                                                    set.wert =
+                                                                        value;
+                                                                  });
+                                                                }
+                                                              });
+                                                            },
+                                                            child: Text(
+                                                                set.wert.toString() +
+                                                                    "kg",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .purple,
+                                                                    fontSize:
+                                                                        16)))
+                                                      ],
+                                                    ),
+                                                    Divider()
+                                                  ],
+                                                );
+                                        }),
+                                uebungsErgebniss.isChecked
+                                    ? SizedBox.shrink()
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          IconButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  uebungsErgebniss.sets
+                                                      .add(Set(20, 10));
+                                                });
+                                              },
+                                              icon: Icon(Icons.add)),
+                                          uebungsErgebniss.sets.length == 0
+                                              ? SizedBox.shrink()
+                                              : IconButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      uebungsErgebniss.sets
+                                                          .removeLast();
+                                                    });
+                                                  },
+                                                  icon: Icon(Icons.delete)),
+                                        ],
+                                      )
+                              ],
+                            ),
                           ),
                         );
                       })),
@@ -361,7 +415,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
               title: Center(child: const Text('Wähle')),
               content: StatefulBuilder(builder: (context, setState) {
                 return NumberPicker(
-                    minValue: 0,
+                    minValue: 1,
                     maxValue: endnumber,
                     value: currentValue,
                     onChanged: (value) => setState(() {
@@ -424,6 +478,8 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
       setState(() {
         uebungenList.insert(0, UebungsErgebniss(result, [], false));
       });
+    } else {
+      _showSnackBar("Du hast die Übung bereits");
     }
   }
 
@@ -439,11 +495,8 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
 
   void tot(Training training) {
     bool tmp = uebungenList.every((element) => element.isChecked == true);
-    if (tmp == false) {
-      var snackBar = SnackBar(
-          duration: Duration(seconds: 1),
-          content: Text("Es sind noch nicht alle Übungen fertig!"));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    if ((tmp == false) || (uebungenList.length == 0)) {
+      _showSnackBar("Es sind noch nicht alle Übungen fertig!");
     } else {
       checkMaxFromUebungen();
       training.dauer = _stopwatch.elapsedMilliseconds;
@@ -453,6 +506,12 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
       Provider.of<AppDataController>(context, listen: false).saveAppData();
       Navigator.pop(context);
     }
+  }
+
+  void _showSnackBar(String text) {
+    var snackBar =
+        SnackBar(duration: Duration(seconds: 1), content: Text(text));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void handleStartStop() {
@@ -498,7 +557,7 @@ class TimerFieldState extends State<TimerField> {
       return Text(
         OnFitness.formatTime(widget.watch.elapsedMilliseconds, true),
         style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),
+            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
       );
     } else {
       return Text(

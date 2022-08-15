@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.purple,
-          fontFamily: 'Georgia',
-        ),
+            primarySwatch: Colors.purple,
+            fontFamily: 'Georgia',
+            ),
         routes: {
           'home': (context) => MyHomePage(),
         },
