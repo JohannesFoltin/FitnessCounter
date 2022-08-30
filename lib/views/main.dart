@@ -1,5 +1,6 @@
 import 'package:fitness_f/controller/controller.dart';
 import 'package:fitness_f/views/onFitness.dart';
+import 'package:fitness_f/views/settings.dart';
 import 'package:fitness_f/views/trainingResult.dart';
 import 'package:fitness_f/views/trainingsPlanEditor.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +21,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-            primarySwatch: Colors.purple,
-            fontFamily: 'Georgia',
-            ),
+          primarySwatch: Colors.purple,
+          fontFamily: 'Georgia',
+        ),
         routes: {
           'home': (context) => MyHomePage(),
         },
@@ -50,7 +51,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return Scaffold(
       appBar: AppBar(
-          actions: [IconButton(onPressed: () {}, icon: Icon(Icons.settings))],
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Settings()));
+                },
+                icon: Icon(Icons.settings))
+          ],
           title: Text(
             "Fitness 3000",
           )),
@@ -180,7 +188,8 @@ class _TrainingSelectorState extends State<TrainingSelector> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              TextButton(onPressed: () {}, child: Text("Add Training")),
+              TextButton(
+                  onPressed: () {}, child: Text("Traingsplan erstellen")),
               TextButton(
                   onPressed: () {
                     Navigator.push(
