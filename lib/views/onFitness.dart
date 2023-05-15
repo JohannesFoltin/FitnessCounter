@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fitness_f/models/datalayer.dart';
+import 'package:fitness_f/views/showTimer.dart';
 import 'package:fitness_f/views/uebungSelector.dart';
 import 'package:fitness_f/views/uebungVisualiser.dart';
 import 'package:flutter/material.dart';
@@ -133,28 +134,8 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                             child: Container(
                                 height: 50,
                                 color: Colors.red,
-                                child: TextButton(
-                                  onPressed: () => {
-                                    if (_countDownController.isAnimating)
-                                      {_countDownController.stop()}
-                                    else
-                                      {_countDownController.start()}
-                                  },
-                                  onLongPress: () =>
-                                      {_countDownController.reset()},
-                                  child: SimpleTimer(
-                                    controller: _countDownController,
-                                    progressTextStyle:
-                                        TextStyle(color: Colors.black),
-                                    displayProgressIndicator: false,
-                                    duration: Duration(minutes: 1, seconds: 30),
-                                    progressTextCountDirection:
-                                        TimerProgressTextCountDirection
-                                            .count_down,
-                                    onEnd: () => {_countDownController.reset()},
-                                  ),
-                                )),
-                          ),
+                                child: ShowTimer(),
+                          ),)
                         ],
                       ),
                     ),

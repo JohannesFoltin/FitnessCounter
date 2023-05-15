@@ -9,7 +9,7 @@ class ShowTimer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => TimerBloc(ticker: Ticker()),
+      create: (_) => TimerBloc(ticker: TickerDown(),duration: 90),
       child: const TimerView(),
     );
   }
