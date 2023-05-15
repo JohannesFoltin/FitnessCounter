@@ -1,6 +1,5 @@
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:flutter/material.dart';
-import 'package:numberpicker/numberpicker.dart';
 
 class TrainingsPlanEditor extends StatefulWidget {
   const TrainingsPlanEditor({Key? key, required this.trainingPlan})

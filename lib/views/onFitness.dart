@@ -192,10 +192,9 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                                                                 ))))
                                                   },
                                           style: TextButton.styleFrom(
-                                            alignment: Alignment.centerLeft,
-                                            primary: uebungsErgebniss.isChecked
+                                            foregroundColor: uebungsErgebniss.isChecked
                                                 ? Colors.grey
-                                                : Colors.black,
+                                                : Colors.black, alignment: Alignment.centerLeft,
                                             textStyle: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold),

@@ -30,7 +30,7 @@ class _TrainingResult extends State<TrainingResult> {
   int getMovedWeigth() {
     int tmp = 0;
     widget.training.uebungErgebnisse
-        .forEach((e) => e.sets.forEach((r) => {tmp = tmp + r.wert}));
+        .forEach((e) => e.sets.forEach((r) => tmp = tmp + r.wert));
     return tmp;
   }
 
