@@ -1,6 +1,7 @@
 import 'package:fitness_f/controller/controller.dart';
 import 'package:fitness_f/views/onFitness.dart';
 import 'package:fitness_f/views/settings.dart';
+import 'package:fitness_f/views/showTimer.dart';
 import 'package:fitness_f/views/trainingResult.dart';
 import 'package:fitness_f/views/trainingsPlanEditor.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Settings()));
+                      MaterialPageRoute(builder: (context) => ShowTimer()));
                 },
                 icon: Icon(Icons.settings))
           ],
