@@ -1,6 +1,5 @@
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:flutter/material.dart';
-import 'main.dart';
 
 class TrainingResult extends StatefulWidget {
   TrainingResult({Key? key, required this.training}) : super(key: key);
@@ -134,7 +133,7 @@ class _TrainingResult extends State<TrainingResult> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: HexColor.fromHex("#006666"),
+      backgroundColor: Colors.grey,
       automaticallyImplyLeading: false,
       centerTitle: true,
       title: Text("Training am " +

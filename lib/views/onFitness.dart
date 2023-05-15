@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:fitness_f/models/datalayer.dart';
-import 'package:fitness_f/views/main.dart';
 import 'package:fitness_f/views/uebungSelector.dart';
 import 'package:fitness_f/views/uebungVisualiser.dart';
 import 'package:flutter/material.dart';
@@ -80,8 +79,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                                     setState(() {
                                       handleStartStop();
                                       if (buttonColor == Colors.orange) {
-                                        buttonColor =
-                                            HexColor.fromHex("#008060");
+                                        buttonColor = Colors.green;
                                       } else {
                                         buttonColor = Colors.orange;
                                       }
@@ -387,7 +385,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: HexColor.fromHex("#006666"),
+      backgroundColor: Colors.grey,
       automaticallyImplyLeading: false,
       title: Text("Training am " +
           // TODO Formatierung
