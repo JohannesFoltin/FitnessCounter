@@ -59,7 +59,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   }
 
   void _onTicked(_TimerTicked event, Emitter<TimerState> emit) {
-    emit(
+   emit(
       event.duration > 0
           ? TimerRunInProgress(event.duration)
           : const TimerRunComplete(),

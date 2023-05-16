@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ShowTimer extends StatelessWidget {
-  const ShowTimer({super.key});
+  const ShowTimer({super.key,required this.starttime});
+
+  final int starttime;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => TimerBloc(ticker: TickerDown(),duration: 90),
+      create: (_) => TimerBloc(ticker: TickerDown(),duration: starttime),
       child: const TimerView(),
     );
   }

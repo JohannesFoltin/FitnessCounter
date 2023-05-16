@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fitness_f/models/datalayer.dart';
 import 'package:fitness_f/views/showTimer.dart';
+import 'package:fitness_f/views/ticker.dart';
 import 'package:fitness_f/views/uebungSelector.dart';
 import 'package:fitness_f/views/uebungVisualiser.dart';
 import 'package:flutter/material.dart';
@@ -32,9 +33,8 @@ class OnFitness extends StatefulWidget {
   }
 }
 
-class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
+class _OnFitness extends State<OnFitness> {
   bool run = true;
-  Stopwatch _stopwatch = new Stopwatch();
   late Training training;
   Color buttonColor = Colors.orange;
   late TimerController _countDownController;
@@ -43,8 +43,6 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    _countDownController = TimerController(this);
-    _stopwatch.start();
     dateCode = DateTime.now();
     training = new Training(0, dateCode, []);
     //TODO check for Trainingsplan and modifiy uebungenlength
@@ -78,7 +76,6 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                                 child: TextButton(
                                   onPressed: () => {
                                     setState(() {
-                                      handleStartStop();
                                       if (buttonColor == Colors.orange) {
                                         buttonColor = Colors.green;
                                       } else {
@@ -115,7 +112,8 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                                             )),
                                   },
                                   child: Center(
-                                      child: TimerField(_stopwatch, true)),
+                                      child: ShowTimer(starttime: 0),
+                                  ),
                                 )),
                           ),
                         ],
@@ -134,7 +132,7 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
                             child: Container(
                                 height: 50,
                                 color: Colors.red,
-                                child: ShowTimer(),
+                                child: ShowTimer(starttime: 90,),
                           ),)
                         ],
                       ),
@@ -491,58 +489,5 @@ class _OnFitness extends State<OnFitness> with SingleTickerProviderStateMixin {
         SnackBar(duration: Duration(seconds: 1), content: Text(text));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
-
-  void handleStartStop() {
-    if (_stopwatch.isRunning) {
-      _stopwatch.stop();
-      run = !run;
-    } else {
-      _stopwatch.start();
-      run = !run;
-    }
-  }
 }
 
-class TimerField extends StatefulWidget {
-  TimerField(this.watch, this.returnHours);
-
-  final Stopwatch watch;
-  final bool returnHours;
-
-  TimerFieldState createState() => TimerFieldState();
-}
-
-class TimerFieldState extends State<TimerField> {
-  late Timer _timer;
-
-  @override
-  void initState() {
-    _timer = new Timer.periodic(new Duration(seconds: 1), (timer) {
-      setState(() {});
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.returnHours) {
-      return Text(
-        OnFitness.formatTime(widget.watch.elapsedMilliseconds, true),
-        style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
-      );
-    } else {
-      return Text(
-        OnFitness.formatTime(widget.watch.elapsedMilliseconds, false),
-        style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
-      );
-    }
-  }
-}
